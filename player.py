@@ -1,6 +1,6 @@
 import pygame
 from bullet import PlayerBeam
-from explosion import Explosion
+from playerexplosion import PlayerExplosion
 
 class Player:
 
@@ -76,7 +76,7 @@ class Player:
     def detect_hit(self, enemy):
         for bullet in self.bullets:
             if bullet.rect.colliderect(enemy.rect):
-                self.explosions.append(Explosion(bullet))
+                self.explosions.append(PlayerExplosion(bullet))
                 self.bullets.remove(bullet)
                 enemy.deplete_health()
 

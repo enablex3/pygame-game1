@@ -1,7 +1,7 @@
 import random
 import pygame
 from bullet import EnemyBullet
-from explosion import Explosion
+from playerexplosion import EnemyExplosion
 from gametext import EnemyHealthLabel, EnemyHealthIndicator
 
 STARTING_ROTATION = 180
@@ -108,7 +108,7 @@ class Enemy:
     def detect_hit(self, player):
         for bullet in self.bullets:
             if bullet.rect.colliderect(player.rect):
-                self.explosions.append(Explosion(bullet))
+                self.explosions.append(EnemyExplosion(bullet))
                 self.bullets.remove(bullet)
                 player.deplete_health()
 
