@@ -1,6 +1,5 @@
 import pygame
 from bullet import PlayerBeam
-from explosion import PlayerExplosion
 
 class Player:
 
@@ -19,6 +18,11 @@ class Player:
         # assign an original image for later use
         self.original_img = self.image
 
+        # image to use to indicate getting hit
+        self.hit_image = pygame.image.load("sprites/playerShipHit.png").convert_alpha()
+        self.hit_image = pygame.transform.scale(self.hit_image, self.size)
+        self.hit_image = pygame.transform.rotate(self.hit_image, self.starting_rotation)
+
         # track player position
         self.rect = pygame.Rect(self.starting_position[0],
                                 self.starting_position[1],
@@ -34,8 +38,9 @@ class Player:
         # track health
         self.health = 5
 
-        # track explosions
-        self.explosions = []
+        # track if hit
+        self.is_hit = False
+        self.is_hit_timer = None
 
     def update(self, keys_pressed):
         if self.rect.x > 400:
@@ -46,7 +51,10 @@ class Player:
 
         self.move(keys_pressed)
 
-        self.explosions = [explosion for explosion in self.explosions if not explosion.should_remove()]
+        if not self.is_hit_timer is None:
+            seconds = (pygame.time.get_ticks() - self.is_hit_timer) / 1000
+            if seconds >= 0.25:
+                self.image = self.original_img
 
     def move(self, keys_pressed):
         # player only moves left or right
@@ -77,7 +85,6 @@ class Player:
     def detect_hit(self, enemy):
         for bullet in self.bullets:
             if bullet.rect.colliderect(enemy.rect):
-                self.explosions.append(PlayerExplosion(bullet))
                 self.bullets.remove(bullet)
                 enemy.deplete_health()
                 pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
@@ -88,3 +95,5 @@ class Player:
         else:
             self.health = 0
 
+        self.image = self.hit_image
+        self.is_hit_timer = pygame.time.get_ticks()

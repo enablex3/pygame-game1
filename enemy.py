@@ -27,6 +27,11 @@ class Enemy:
         # assign an original image for later use
         self.original_img = self.image
 
+        # image to use to indicate getting hit
+        self.hit_image = pygame.image.load("sprites/enemyShipHit.png").convert_alpha()
+        self.hit_image = pygame.transform.scale(self.hit_image, SIZE)
+        self.hit_image = pygame.transform.rotate(self.hit_image, STARTING_ROTATION)
+
         # track player position
         self.rect = pygame.Rect(self.starting_position[0],
                                 self.starting_position[1],
@@ -55,6 +60,10 @@ class Enemy:
         # track explosions
         self.explosions = []
 
+        # track if hit
+        self.is_hit = False
+        self.is_hit_timer = None
+
     def update(self):
         # keep enemies with window boundaries
         if self.rect.x > 400:
@@ -68,7 +77,10 @@ class Enemy:
         self.health_label.update(self)
         self.health_indicator.update(self.health, self.health_label)
 
-        self.explosions = [explosion for explosion in self.explosions if not explosion.should_remove()]
+        if not self.is_hit_timer is None:
+            seconds = (pygame.time.get_ticks() - self.is_hit_timer) / 1000
+            if seconds >= 0.25:
+                self.image = self.original_img
 
     def move(self):
         # player only moves left or right for a random duration
@@ -110,11 +122,11 @@ class Enemy:
     def detect_hit(self, player):
         for bullet in self.bullets:
             if bullet.rect.colliderect(player.rect):
-                self.explosions.append(EnemyExplosion(bullet))
                 self.bullets.remove(bullet)
                 player.deplete_health()
                 pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
     def deplete_health(self):
         self.health -= 1
-
+        self.image = self.hit_image
+        self.is_hit_timer = pygame.time.get_ticks()

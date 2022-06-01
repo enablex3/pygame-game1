@@ -3,6 +3,7 @@ import pygame
 import threading
 
 from enemy import Enemy
+from explosion import PlayerExplosion
 from wave import Wave
 from gametext import *
 from player import Player
@@ -123,9 +124,6 @@ def draw_window():
         for bullet in enemy.bullets:
             WIN.blit(bullet.image, (bullet.rect.x, bullet.rect.y))
 
-        for explosion in enemy.explosions:
-            WIN.blit(explosion.image, (explosion.rect.x, explosion.rect.y))
-
     # if no enemies left, player won
     if len(wave.waves) == 0:
         WIN.blit(game_won_label.image, game_won_label.position)
@@ -136,10 +134,6 @@ def draw_window():
     # display player bullets
     for bullet in player.bullets:
         WIN.blit(bullet.image, (bullet.rect.x, bullet.rect.y))
-
-    # display player bullet explosions
-    for explosion in player.explosions:
-        WIN.blit(explosion.image, (explosion.rect.x, explosion.rect.y))
 
     pygame.display.update()  # this finally updates the display
 
