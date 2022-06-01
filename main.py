@@ -9,6 +9,7 @@ from player import Player
 
 # caption
 pygame.display.set_caption("Whacking Space")
+pygame.mixer.init()
 
 # game window config
 WIDTH, HEIGHT = 500, 800
@@ -25,6 +26,7 @@ loading_label = LoadingLabel()
 def display_loading_screen():
     clock = pygame.time.Clock()
     start_load_time = pygame.time.get_ticks()
+    load_sound_played = False
     while True:
         clock.tick(FPS)
 
@@ -35,6 +37,10 @@ def display_loading_screen():
         pygame.display.update()
 
         global game_loaded
+
+        if not load_sound_played:
+            load_sound_played = True
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/load.wav"))
 
         if game_loaded:
             seconds = (pygame.time.get_ticks() - start_load_time) / 1000
@@ -79,7 +85,13 @@ wave_indicator = WavesIndicator(wave_number)
 game_loaded = True
 loading_thread.join()
 
+game_over_sound_played = False
+game_won_sound_played = False
+
 def draw_window():
+    global game_over_sound_played
+    global game_won_sound_played
+
     WIN.blit(BACKGROUND, (0, 0))  # this doesn't actually display yet
     pygame.draw.rect(WIN, banner_color, banner)
 
@@ -98,6 +110,9 @@ def draw_window():
         WIN.blit(player.image, (player.rect.x, player.rect.y))
     else:
         WIN.blit(game_over_label.image, game_over_label.position)
+        if not game_over_sound_played:
+            game_over_sound_played = True
+            pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/lose.wav"))
 
     # display each enemy, their bullets and associated explosions
     for enemy in enemies:
@@ -114,6 +129,9 @@ def draw_window():
     # if no enemies left, player won
     if len(wave.waves) == 0:
         WIN.blit(game_won_label.image, game_won_label.position)
+        if not game_won_sound_played:
+            game_won_sound_played = True
+            pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/win.wav"))
 
     # display player bullets
     for bullet in player.bullets:
@@ -159,6 +177,7 @@ def main():
 
             if enemy.health == 0:
                 enemies.remove(enemy)
+                pygame.mixer.Channel(2).play(pygame.mixer.Sound("sfx/explosion.wav"))
 
             enemy.add_bullet()
             enemy.shoot()

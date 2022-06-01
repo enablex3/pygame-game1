@@ -1,6 +1,6 @@
 import pygame
 from bullet import PlayerBeam
-from playerexplosion import PlayerExplosion
+from explosion import PlayerExplosion
 
 class Player:
 
@@ -62,6 +62,7 @@ class Player:
                 # fire bullet
                 bullet = PlayerBeam(self.rect)
                 self.bullets.append(bullet)
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
                 return True
         return False
 
@@ -79,6 +80,7 @@ class Player:
                 self.explosions.append(PlayerExplosion(bullet))
                 self.bullets.remove(bullet)
                 enemy.deplete_health()
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
     def deplete_health(self):
         if self.health != 0:

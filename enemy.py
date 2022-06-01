@@ -1,7 +1,7 @@
 import random
 import pygame
 from bullet import EnemyBullet
-from playerexplosion import EnemyExplosion
+from explosion import EnemyExplosion
 from gametext import EnemyHealthLabel, EnemyHealthIndicator
 
 STARTING_ROTATION = 180
@@ -93,6 +93,8 @@ class Enemy:
             self.shooting_time = random.randrange(1, 6)
             self.shooting_start_ticks = pygame.time.get_ticks()
 
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
+
             return True
 
         return False
@@ -111,6 +113,7 @@ class Enemy:
                 self.explosions.append(EnemyExplosion(bullet))
                 self.bullets.remove(bullet)
                 player.deplete_health()
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
     def deplete_health(self):
         self.health -= 1

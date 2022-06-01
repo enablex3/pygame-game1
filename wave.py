@@ -12,7 +12,7 @@ class Wave:
         starting_enemy_amount_lower = 1
         starting_enemy_amount_higher = 3
 
-        for k in range(0, 5):
+        for k in range(0, 4):
             enemy_amount = random.randrange(starting_enemy_amount_lower, starting_enemy_amount_higher)
 
             starting_enemy_amount_lower = starting_enemy_amount_higher
