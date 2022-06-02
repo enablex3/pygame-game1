@@ -157,7 +157,7 @@ def main():
 
             # add a new bullet to the player bullet list if condition met
             if not "RELOAD" in ammo_indicator.label:
-                update_ammo_text = player.add_bullet(event)
+                update_ammo_text = player.add_bullet(pygame.key.get_pressed())
 
             if update_ammo_text:
                 ammo_indicator.update()

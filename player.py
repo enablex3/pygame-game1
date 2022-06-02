@@ -64,14 +64,13 @@ class Player:
         if keys_pressed[pygame.K_d]:
             self.rect.x += self.velocity
 
-    def add_bullet(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                # fire bullet
-                bullet = PlayerBeam(self.rect)
-                self.bullets.append(bullet)
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
-                return True
+    def add_bullet(self, keys_pressed):
+        if keys_pressed[pygame.K_SPACE]:
+            # fire bullet
+            bullet = PlayerBeam(self.rect)
+            self.bullets.append(bullet)
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
+            return True
         return False
 
     def shoot(self):
