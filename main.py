@@ -45,7 +45,7 @@ def display_loading_screen():
 
         if not load_sound_played:
             load_sound_played = True
-            if  music_enabled_setting:
+            if music_enabled_setting:
                 pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/load.wav"))
 
         if game_loaded:
