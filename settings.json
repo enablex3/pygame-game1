@@ -1,0 +1,14 @@
+{
+  "options": {
+    "music_enabled": ["true", "false"],
+    "sfx_enabled": ["true", "false"],
+    "difficulty": ["easy", "medium", "hard"]
+  },
+
+  "player_settings": {
+    "music_enabled": "false",
+    "sfx_enabled": "false",
+    "difficulty": "easy"
+  }
+
+}

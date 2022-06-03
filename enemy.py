@@ -94,7 +94,7 @@ class Enemy:
         else:
             self.rect.x += self.velocity
 
-    def add_bullet(self):
+    def add_bullet(self, sfx_enabled_setting):
         # enemies shoot randomly
         seconds = (pygame.time.get_ticks() - self.shooting_start_ticks) / 1000
         if seconds > self.shooting_time:
@@ -105,7 +105,8 @@ class Enemy:
             self.shooting_time = random.randrange(1, 6)
             self.shooting_start_ticks = pygame.time.get_ticks()
 
-            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
+            if sfx_enabled_setting:
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
 
             return True
 
@@ -119,12 +120,13 @@ class Enemy:
             if bullet.rect.y >= 750:
                 self.bullets.remove(bullet)
 
-    def detect_hit(self, player):
+    def detect_hit(self, player, sfx_enabled_setting):
         for bullet in self.bullets:
             if bullet.rect.colliderect(player.rect):
                 self.bullets.remove(bullet)
                 player.deplete_health()
-                pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
+                if sfx_enabled_setting:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
     def deplete_health(self):
         self.health -= 1

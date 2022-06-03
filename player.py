@@ -64,12 +64,13 @@ class Player:
         if keys_pressed[pygame.K_d]:
             self.rect.x += self.velocity
 
-    def add_bullet(self, keys_pressed):
+    def add_bullet(self, keys_pressed, sfx_enabled_setting):
         if keys_pressed[pygame.K_SPACE]:
             # fire bullet
             bullet = PlayerBeam(self.rect)
             self.bullets.append(bullet)
-            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
+            if sfx_enabled_setting:
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
             return True
         return False
 
@@ -81,12 +82,13 @@ class Player:
             if bullet.rect.y <= 60:
                 self.bullets.remove(bullet)
 
-    def detect_hit(self, enemy):
+    def detect_hit(self, enemy, sfx_enabled_setting):
         for bullet in self.bullets:
             if bullet.rect.colliderect(enemy.rect):
                 self.bullets.remove(bullet)
                 enemy.deplete_health()
-                pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
+                if sfx_enabled_setting:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
     def deplete_health(self):
         if self.health != 0:

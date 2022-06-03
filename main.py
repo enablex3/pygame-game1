@@ -1,12 +1,15 @@
-import random
-import pygame
 import threading
-
-from enemy import Enemy
-from explosion import PlayerExplosion
+import json
 from wave import Wave
 from gametext import *
 from player import Player
+
+# load player settings
+with open("settings.json", "r") as settingsJsonFile:
+    settings = json.load(settingsJsonFile)
+
+music_enabled_setting = (settings["player_settings"]["music_enabled"] == "true")
+sfx_enabled_setting = (settings["player_settings"]["sfx_enabled"] == "true")
 
 # caption
 pygame.display.set_caption("Whacking Space")
@@ -38,10 +41,12 @@ def display_loading_screen():
         pygame.display.update()
 
         global game_loaded
+        global music_enabled_setting
 
         if not load_sound_played:
             load_sound_played = True
-            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/load.wav"))
+            if  music_enabled_setting:
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/load.wav"))
 
         if game_loaded:
             seconds = (pygame.time.get_ticks() - start_load_time) / 1000
@@ -55,7 +60,6 @@ loading_thread.start()
 # background and mouse settings
 BACKGROUND = pygame.image.load("sprites/background.png").convert_alpha()
 BACKGROUND = pygame.transform.scale(BACKGROUND, (WIDTH, HEIGHT))
-pygame.mouse.set_visible(False)
 
 # banner for text
 banner = pygame.Rect(0, 0, WIDTH, 60)
@@ -82,6 +86,15 @@ enemies_indicator = EnemiesIndicator(enemies)
 wave_label = WavesLabel()
 wave_indicator = WavesIndicator(wave_number)
 
+# menu text
+menu_label = MenuLabel()
+music_label = MusicLabel()
+music_enabled = MusicEnable()
+music_disable = MusicDisable()
+sfx_label = SFXLabel()
+sfx_enabled = SFXEnable()
+sfx_disable = SFXDisable()
+
 # stop loading thread
 game_loaded = True
 loading_thread.join()
@@ -89,7 +102,22 @@ loading_thread.join()
 game_over_sound_played = False
 game_won_sound_played = False
 
-def draw_window():
+show_menu = True
+
+def draw_menu():
+    WIN.fill((255, 255, 255))
+    WIN.blit(menu_label.image, menu_label.position)
+    WIN.blit(music_label.image, music_label.position)
+    WIN.blit(music_enabled.image, music_enabled.position)
+    WIN.blit(music_disable.image, music_disable.position)
+    WIN.blit(sfx_label.image, sfx_label.position)
+    WIN.blit(sfx_enabled.image, sfx_enabled.position)
+    WIN.blit(sfx_disable.image, sfx_disable.position)
+
+    pygame.display.update()
+
+
+def draw_game_window():
     global game_over_sound_played
     global game_won_sound_played
 
@@ -113,7 +141,8 @@ def draw_window():
         WIN.blit(game_over_label.image, game_over_label.position)
         if not game_over_sound_played:
             game_over_sound_played = True
-            pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/lose.wav"))
+            if music_enabled_setting:
+                pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/lose.wav"))
 
     # display each enemy, their bullets and associated explosions
     for enemy in enemies:
@@ -129,7 +158,8 @@ def draw_window():
         WIN.blit(game_won_label.image, game_won_label.position)
         if not game_won_sound_played:
             game_won_sound_played = True
-            pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/win.wav"))
+            if music_enabled_setting:
+                pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/win.wav"))
 
     # display player bullets
     for bullet in player.bullets:
@@ -140,6 +170,8 @@ def draw_window():
 def main():
     global enemies
     global wave_number
+    global sfx_enabled_setting
+    global show_menu
 
     clock = pygame.time.Clock()
 
@@ -151,51 +183,65 @@ def main():
 
         events = pygame.event.get()
 
-        for event in events:
-            if event.type == pygame.QUIT:
-                run = False
+        if not show_menu:
 
-            # add a new bullet to the player bullet list if condition met
-            if not "RELOAD" in ammo_indicator.label:
-                update_ammo_text = player.add_bullet(pygame.key.get_pressed())
+            pygame.mouse.set_visible(False)
 
-            if update_ammo_text:
-                ammo_indicator.update()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    run = False
 
-        # updates the player based on keys pressed
-        player.update(pygame.key.get_pressed())
+                # add a new bullet to the player bullet list if condition met
+                if not "RELOAD" in ammo_indicator.label:
+                    update_ammo_text = player.add_bullet(pygame.key.get_pressed(), sfx_enabled_setting)
 
-        # update the enemy
-        for enemy in enemies:
-            enemy.update()
+                if update_ammo_text:
+                    ammo_indicator.update()
 
-            if enemy.health == 0:
-                enemies.remove(enemy)
-                pygame.mixer.Channel(2).play(pygame.mixer.Sound("sfx/explosion.wav"))
+            # updates the player based on keys pressed
+            player.update(pygame.key.get_pressed())
 
-            enemy.add_bullet()
-            enemy.shoot()
-            enemy.detect_hit(player)
+            # update the enemy
+            for enemy in enemies:
+                enemy.update()
 
-        player.shoot()
+                if enemy.health == 0:
+                    enemies.remove(enemy)
+                    if sfx_enabled_setting:
+                        pygame.mixer.Channel(2).play(pygame.mixer.Sound("sfx/explosion.wav"))
 
-        for enemy in enemies:
-            player.detect_hit(enemy)
+                enemy.add_bullet(sfx_enabled_setting)
+                enemy.shoot()
+                enemy.detect_hit(player, sfx_enabled_setting)
 
-        ammo_indicator.reload(pygame.key.get_pressed())
-        player_health_indicator.update(player.health)
-        enemies_indicator.update(enemies)
-        wave_indicator.update(wave_number)
+            player.shoot()
 
-        draw_window()
+            for enemy in enemies:
+                player.detect_hit(enemy, sfx_enabled_setting)
 
-        if len(enemies) == 0:
-            enemies = wave.get_next_wave()
-            wave_number += 1
+            ammo_indicator.reload(pygame.key.get_pressed())
+            player_health_indicator.update(player.health)
+            enemies_indicator.update(enemies)
+            wave_indicator.update(wave_number)
 
-        # just for accurate wave indicator value
-        if len(wave.waves) == 0:
-            wave_number = 0
+            draw_game_window()
+
+            if len(enemies) == 0:
+                enemies = wave.get_next_wave()
+                wave_number += 1
+
+            # just for accurate wave indicator value
+            if len(wave.waves) == 0:
+                wave_number = 0
+
+        else:
+            for event in events:
+                if event.type == pygame.QUIT:
+                    run = False
+                if pygame.key.get_pressed()[pygame.K_q]:
+                    show_menu = False
+
+            draw_menu()
 
     pygame.quit()
 
