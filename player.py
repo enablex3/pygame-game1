@@ -3,7 +3,7 @@ from bullet import PlayerBeam
 
 class Player:
 
-    def __init__(self):
+    def __init__(self, ship):
         # define attributes
         self.size = (100, 100)
         self.velocity = 6
@@ -11,7 +11,7 @@ class Player:
         self.starting_position = (200, 700)
 
         # load the player's image, scale and rotate
-        self.image = pygame.image.load("sprites/playerShip.png").convert_alpha()
+        self.image = pygame.image.load(ship["original_img"]).convert_alpha()
         self.image = pygame.transform.scale(self.image, self.size)
         self.image = pygame.transform.rotate(self.image, self.starting_rotation)
 
@@ -19,9 +19,17 @@ class Player:
         self.original_img = self.image
 
         # image to use to indicate getting hit
-        self.hit_image = pygame.image.load("sprites/playerShipHit.png").convert_alpha()
+        self.hit_image = pygame.image.load(ship["hit_img"]).convert_alpha()
         self.hit_image = pygame.transform.scale(self.hit_image, self.size)
         self.hit_image = pygame.transform.rotate(self.hit_image, self.starting_rotation)
+
+        # define beam attributes
+        self.size = (40, 40)
+        self.rotation = 0
+        # beam image
+        self.beam_img = pygame.image.load(ship["beam_img"]).convert_alpha()
+        self.beam_img = pygame.transform.scale(self.beam_img, self.size)
+        self.bean_img = pygame.transform.rotate(self.beam_img, self.rotation)
 
         # track player position
         self.rect = pygame.Rect(self.starting_position[0],
@@ -41,6 +49,9 @@ class Player:
         # track if hit
         self.is_hit = False
         self.is_hit_timer = None
+
+        # track ammo
+        self.ammo = 30
 
     def update(self, keys_pressed):
         if self.rect.x > 400:
@@ -64,15 +75,15 @@ class Player:
         if keys_pressed[pygame.K_d]:
             self.rect.x += self.velocity
 
-    def add_bullet(self, keys_pressed, sfx_enabled_setting):
-        if keys_pressed[pygame.K_SPACE]:
-            # fire bullet
-            bullet = PlayerBeam(self.rect)
-            self.bullets.append(bullet)
-            if sfx_enabled_setting:
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
-            return True
-        return False
+    def add_bullet(self, sfx_enabled_setting):
+        self.ammo -= 1
+
+        bullet = PlayerBeam(self.rect, self.beam_img)
+        self.bullets.append(bullet)
+
+        if sfx_enabled_setting:
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
+
 
     def shoot(self):
         # bullets only fire to the right

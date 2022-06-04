@@ -10,6 +10,7 @@ with open("settings.json", "r") as settingsJsonFile:
 
 music_enabled_setting = (settings["player_settings"]["music_enabled"] == "true")
 sfx_enabled_setting = (settings["player_settings"]["sfx_enabled"] == "true")
+ship = settings["player_settings"]["ship"]
 
 # caption
 pygame.display.set_caption("Whacking Space")
@@ -66,7 +67,7 @@ banner = pygame.Rect(0, 0, WIDTH, 60)
 banner_color = (0, 0, 0)
 
 # load the player
-player = Player()
+player = Player(ship)
 
 # load waves
 wave = Wave()
@@ -76,7 +77,7 @@ wave_number = 1
 
 # load text
 ammo_label = AmmoLabel()
-ammo_indicator = AmmoIndicator()
+ammo_indicator = AmmoIndicator(player.ammo)
 player_health_label = PlayerHealthLabel()
 player_health_indicator = PlayerHealthIndicator(player.health)
 game_over_label = GameOverLabel()
@@ -192,11 +193,9 @@ def main():
                     run = False
 
                 # add a new bullet to the player bullet list if condition met
-                if not "RELOAD" in ammo_indicator.label:
-                    update_ammo_text = player.add_bullet(pygame.key.get_pressed(), sfx_enabled_setting)
-
-                if update_ammo_text:
-                    ammo_indicator.update()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        update_ammo_text = player.add_bullet(sfx_enabled_setting)
 
             # updates the player based on keys pressed
             player.update(pygame.key.get_pressed())
@@ -219,7 +218,7 @@ def main():
             for enemy in enemies:
                 player.detect_hit(enemy, sfx_enabled_setting)
 
-            ammo_indicator.reload(pygame.key.get_pressed())
+            ammo_indicator.update(player.ammo)
             player_health_indicator.update(player.health)
             enemies_indicator.update(enemies)
             wave_indicator.update(wave_number)
