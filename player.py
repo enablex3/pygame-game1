@@ -5,7 +5,7 @@ class Player:
 
     def __init__(self, ship):
         # define attributes
-        self.size = (100, 100)
+        self.size = (70, 70)
         self.velocity = 6
         self.starting_rotation = 0
         self.starting_position = (200, 700)
@@ -34,7 +34,7 @@ class Player:
         # track player position
         self.rect = pygame.Rect(self.starting_position[0],
                                 self.starting_position[1],
-                                self.size[0],
+                                self.size[0] + 20,
                                 self.size[1])
 
         # track rotation angle

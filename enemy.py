@@ -6,7 +6,7 @@ from gametext import EnemyHealthLabel, EnemyHealthIndicator
 
 STARTING_ROTATION = 180
 
-SIZE = (100, 100)
+SIZE = (60, 60)
 
 STARTING_Y_OPTIONS = [80, 120]
 
@@ -35,7 +35,7 @@ class Enemy:
         # track player position
         self.rect = pygame.Rect(self.starting_position[0],
                                 self.starting_position[1],
-                                SIZE[0],
+                                SIZE[0] + 20,
                                 SIZE[1])
 
         # track rotation angle

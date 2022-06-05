@@ -11,8 +11,8 @@ class PlayerBeam:
 
         # track the position
         self.rect = pygame.Rect(
-            player_rect.x + 50,
-            player_rect.y + player_rect.height // 2 - 10,
+            player_rect.x + 15,
+            player_rect.y + player_rect.height // 2 - 50,
             10,
             5
         )
@@ -38,8 +38,8 @@ class EnemyBullet:
 
         # track the position
         self.rect = pygame.Rect(
-            player_rect.x + 50,
-            player_rect.y + player_rect.height // 2 - 10,
+            player_rect.x + 15,
+            player_rect.y + player_rect.height // 2 + 20,
             10,
             5
         )
