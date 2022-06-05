@@ -59,14 +59,16 @@ def set_yellow_ship():
 
 
 def main():
+    # obtain settings
+    ships = settings["options"]["ships"]
+    music = settings["player_settings"]["music"]
+    sfx = settings["player_settings"]["sfx"]
 
     menu = pygame_menu.Menu('Main Menu', 500, 800, theme=pygame_menu.themes.THEME_DARK)
 
     menu.add.selector('Difficulty: ', [('Easy', 1), ('Medium', 2), ('Hard', 3)], onchange=set_difficulty)
-    menu.add.selector('Music: ', [('ON', 1), ('OFF', 0)], onchange=set_music)
-    menu.add.selector('SFX: ', [('ON', 1), ('OFF', 0)], onchange=set_sfx)
-
-    ships = settings["options"]["ships"]
+    menu.add.selector('Music: ', [('ON', 1), ('OFF', 0)], onchange=set_music).set_value(0 if music == "ON" else 1)
+    menu.add.selector('SFX: ', [('ON', 1), ('OFF', 0)], onchange=set_sfx).set_value(0 if sfx == "ON" else 1)
 
     menu.add.button('Goblin', set_goblin_ship, accept_kwargs=True, font_size=18)
     menu.add.image(ships["goblin"]["original_img"])
@@ -87,8 +89,6 @@ def main():
 
 def draw_game_window(game_over_sound_played,
                      game_won_sound_played,
-                     ammo_label,
-                     ammo_indicator,
                      player_health_label,
                      player_health_indicator,
                      enemies_label,
@@ -104,8 +104,6 @@ def draw_game_window(game_over_sound_played,
     WIN.blit(BACKGROUND, (0, 0))  # this doesn't actually display yet
 
     # display labels and indicators
-    WIN.blit(ammo_label.image, ammo_label.position)
-    WIN.blit(ammo_indicator.image, ammo_indicator.position)
     WIN.blit(player_health_label.image, player_health_label.position)
     WIN.blit(player_health_indicator.image, player_health_indicator.position)
     WIN.blit(enemies_label.image, enemies_label.position)
@@ -174,8 +172,6 @@ def play_game():
     wave_number = 1
 
     # load text
-    ammo_label = AmmoLabel()
-    ammo_indicator = AmmoIndicator(player.ammo)
     player_health_label = PlayerHealthLabel()
     player_health_indicator = PlayerHealthIndicator(player.health)
     game_over_label = GameOverLabel()
@@ -207,7 +203,7 @@ def play_game():
             # add a new bullet to the player bullet list if condition met
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    update_ammo_text = player.add_bullet(sfx_enabled_setting)
+                    player.add_bullet(sfx_enabled_setting)
 
         # updates the player based on keys pressed
         player.update(pygame.key.get_pressed())
@@ -230,7 +226,6 @@ def play_game():
         for enemy in enemies:
             player.detect_hit(enemy, sfx_enabled_setting)
 
-        ammo_indicator.update(player.ammo)
         player_health_indicator.update(player.health)
         enemies_indicator.update(enemies)
         wave_indicator.update(wave_number)
@@ -240,8 +235,6 @@ def play_game():
         game_over_sound_played, game_won_sound_played = \
             draw_game_window(game_over_sound_played,
                              game_won_sound_played,
-                             ammo_label,
-                             ammo_indicator,
                              player_health_label,
                              player_health_indicator,
                              enemies_label,

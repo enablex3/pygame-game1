@@ -16,45 +16,6 @@ class LoadingLabel:
         self.image = self.fontObj.render(self.label, True, (0, 0, 0))
         self.position = (175, 500)
 
-class AmmoLabel:
-
-    def __init__(self):
-        self.font = pygame.font.get_default_font() + ".ttf"
-        self.size = 20
-        self.label = "Ammo:"
-        self.fontObj = pygame.font.SysFont(self.font, self.size)
-        self.image = self.fontObj.render(self.label, True, (255, 255, 255))
-        self.position = (LABEL_X, LABEL_Y)
-
-class AmmoIndicator:
-
-    def __init__(self, ammo):
-        self.font = pygame.font.get_default_font() + ".ttf"
-        self.size = 20
-        self.color = (25, 255, 124)
-        self.label = str(ammo)
-        self.fontObj = pygame.font.SysFont(self.font, self.size)
-        self.image = self.fontObj.render(self.label, True, self.color)
-        self.position = (INDICATOR_X, LABEL_Y)
-
-    def update(self, ammo):
-        if ammo == 1:
-            self.label = "RELOAD!"
-            self.color = (205, 92, 92)
-        else:
-            ammo -= 1
-            self.label = str(ammo)
-            self.color = (255, 255, 255)
-
-        if ammo > 20:
-            self.color = (25, 255, 124)
-        elif 20 >= ammo > 10:
-            self.color = (255, 255, 0)
-        else:
-            self.color = (255, 100, 100)
-
-        self.image = self.fontObj.render(self.label, True, self.color)
-
 class PlayerHealthLabel:
 
     def __init__(self):

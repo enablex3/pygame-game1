@@ -1,6 +1,6 @@
 import random
 import pygame
-from bullet import EnemyBullet
+from beam import EnemyBullet
 from explosion import EnemyExplosion
 from gametext import EnemyHealthLabel, EnemyHealthIndicator
 

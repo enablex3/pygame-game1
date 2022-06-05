@@ -1,5 +1,5 @@
 import pygame
-from bullet import PlayerBeam
+from beam import PlayerBeam
 
 class Player:
 
@@ -50,9 +50,6 @@ class Player:
         self.is_hit = False
         self.is_hit_timer = None
 
-        # track ammo
-        self.ammo = 30
-
     def update(self, keys_pressed):
         if self.rect.x > 400:
             self.rect.x = 400
@@ -76,8 +73,6 @@ class Player:
             self.rect.x += self.velocity
 
     def add_bullet(self, sfx_enabled_setting):
-        self.ammo -= 1
-
         bullet = PlayerBeam(self.rect, self.beam_img)
         self.bullets.append(bullet)
 
