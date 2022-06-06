@@ -50,6 +50,11 @@ class Player:
         self.is_hit = False
         self.is_hit_timer = None
 
+        # track beams shot
+        self.beams_overheated = False
+        self.beam_cooldown_timer = None
+        self.bullets_shot = 0
+
     def update(self, keys_pressed):
         if self.rect.x > 400:
             self.rect.x = 400
@@ -64,6 +69,12 @@ class Player:
             if seconds >= 0.25:
                 self.image = self.original_img
 
+        if not self.beam_cooldown_timer is None:
+            seconds = (pygame.time.get_ticks() - self.beam_cooldown_timer) / 1000
+            if seconds > 3:
+                self.beams_overheated = False
+                self.beam_cooldown_timer = None
+
     def move(self, keys_pressed):
         # player only moves left or right
         if keys_pressed[pygame.K_a]:
@@ -73,11 +84,18 @@ class Player:
             self.rect.x += self.velocity
 
     def add_bullet(self, sfx_enabled_setting):
-        bullet = PlayerBeam(self.rect, self.beam_img)
-        self.bullets.append(bullet)
+        if not self.beams_overheated:
+            bullet = PlayerBeam(self.rect, self.beam_img)
+            self.bullets.append(bullet)
 
-        if sfx_enabled_setting:
-            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
+            if sfx_enabled_setting:
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
+
+            self.bullets_shot += 1
+
+        if self.bullets_shot % 5 == 0 and not self.beams_overheated:
+            self.beams_overheated = True
+            self.beam_cooldown_timer = pygame.time.get_ticks()
 
 
     def shoot(self):
