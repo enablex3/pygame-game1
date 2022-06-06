@@ -54,6 +54,11 @@ class Player:
         self.beams_overheated = False
         self.beam_cooldown_timer = None
         self.bullets_shot = 0
+        self.BEAM_OVERHEAT_LIMIT = 10
+
+        # lives indicator
+        self.lives_img = pygame.image.load("sprites/PlayerLivesIndicator.png")
+        self.lives_img = pygame.transform.scale(self.lives_img, (20, 20))
 
     def update(self, keys_pressed):
         if self.rect.x > 400:
@@ -93,7 +98,7 @@ class Player:
 
             self.bullets_shot += 1
 
-        if self.bullets_shot % 5 == 0 and not self.beams_overheated:
+        if self.bullets_shot % self.BEAM_OVERHEAT_LIMIT == 0 and not self.beams_overheated:
             self.beams_overheated = True
             self.beam_cooldown_timer = pygame.time.get_ticks()
 
@@ -122,3 +127,6 @@ class Player:
 
         self.image = self.hit_image
         self.is_hit_timer = pygame.time.get_ticks()
+
+    def add_health(self):
+        self.health += 1

@@ -15,6 +15,7 @@ with open(SETTINGS_FILE, "r") as settingsJsonFile:
 
 music_enabled_setting = (settings["player_settings"]["music"] == "ON")
 sfx_enabled_setting = (settings["player_settings"]["sfx"] == "ON")
+difficulty_setting = settings["player_settings"]["difficulty"]
 ship = settings["player_settings"]["ship"]
 
 # caption
@@ -31,7 +32,8 @@ BACKGROUND = pygame.image.load("sprites/background.png").convert_alpha()
 BACKGROUND = pygame.transform.scale(BACKGROUND, (WIDTH, HEIGHT))
 
 def set_difficulty(value, difficulty):
-    print(value[0][0])
+    global difficulty_setting
+    difficulty_setting = value[0][0]
 
 def set_music(value, music_enabled):
     global music_enabled_setting
@@ -61,14 +63,21 @@ def set_yellow_ship():
 def main():
     # obtain settings
     ships = settings["options"]["ships"]
+
     music = settings["player_settings"]["music"]
+    music_options = settings["options"]["music"]
+
     sfx = settings["player_settings"]["sfx"]
+    sfx_options = settings["options"]["sfx"]
+
+    difficulty = settings["player_settings"]["difficulty"]
+    difficulty_options = settings["options"]["difficulty"]
 
     menu = pygame_menu.Menu('Main Menu', 500, 800, theme=pygame_menu.themes.THEME_DARK)
 
-    menu.add.selector('Difficulty: ', [('Easy', 1), ('Medium', 2), ('Hard', 3)], onchange=set_difficulty)
-    menu.add.selector('Music: ', [('ON', 1), ('OFF', 0)], onchange=set_music).set_value(0 if music == "ON" else 1)
-    menu.add.selector('SFX: ', [('ON', 1), ('OFF', 0)], onchange=set_sfx).set_value(0 if sfx == "ON" else 1)
+    menu.add.selector('Difficulty: ', [('EASY', 1), ('MEDIUM', 2), ('HARD', 3)], onchange=set_difficulty).set_value(difficulty_options.index(difficulty))
+    menu.add.selector('Music: ', [('ON', 1), ('OFF', 0)], onchange=set_music).set_value(music_options.index(music))
+    menu.add.selector('SFX: ', [('ON', 1), ('OFF', 0)], onchange=set_sfx).set_value(sfx_options.index(sfx))
 
     menu.add.button('Goblin', set_goblin_ship, accept_kwargs=True, font_size=18)
     menu.add.image(ships["goblin"]["original_img"])
@@ -99,7 +108,9 @@ def draw_game_window(game_over_sound_played,
                      game_won_label,
                      player,
                      enemies,
-                     wave):
+                     wave,
+                     transition_time,
+                     transition_active):
 
     WIN.blit(BACKGROUND, (0, 0))  # this doesn't actually display yet
 
@@ -108,8 +119,6 @@ def draw_game_window(game_over_sound_played,
     WIN.blit(player_health_indicator.image, player_health_indicator.position)
     WIN.blit(enemies_label.image, enemies_label.position)
     WIN.blit(enemies_indicator.image, enemies_indicator.position)
-    WIN.blit(wave_label.image, wave_label.position)
-    WIN.blit(wave_indicator.image, wave_indicator.position)
 
     # if the player is alive, display - else, game over
     if player.health != 0:
@@ -121,14 +130,30 @@ def draw_game_window(game_over_sound_played,
             if music_enabled_setting:
                 pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/lose.wav"))
 
-    # display each enemy, their bullets and associated explosions
-    for enemy in enemies:
-        WIN.blit(enemy.image, (enemy.rect.x, enemy.rect.y))
-        WIN.blit(enemy.health_label.image, enemy.health_label.position)
-        WIN.blit(enemy.health_indicator.image, enemy.health_indicator.position)
+    # display player lives
+    live_img_spacing = 20
+    for k in range(0, player.health):
+        WIN.blit(player.lives_img, (live_img_spacing, 20))
+        live_img_spacing += 25
 
-        for bullet in enemy.bullets:
+    # display each enemy, their bullets and associated explosions
+    seconds = (pygame.time.get_ticks() - transition_time) / 1000
+    if seconds > 5:
+        for enemy in enemies:
+            WIN.blit(enemy.image, (enemy.rect.x, enemy.rect.y))
+
+            for bullet in enemy.bullets:
+                WIN.blit(bullet.image, (bullet.rect.x, bullet.rect.y))
+
+        # display player bullets
+        for bullet in player.bullets:
             WIN.blit(bullet.image, (bullet.rect.x, bullet.rect.y))
+
+        transition_active = False
+    else:
+        if len(wave.waves) != 0:
+            WIN.blit(wave_label.image, wave_label.position)
+            WIN.blit(wave_indicator.image, wave_indicator.position)
 
     # if no enemies left, player won
     if len(wave.waves) == 0:
@@ -138,13 +163,9 @@ def draw_game_window(game_over_sound_played,
             if music_enabled_setting:
                 pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/win.wav"))
 
-    # display player bullets
-    for bullet in player.bullets:
-        WIN.blit(bullet.image, (bullet.rect.x, bullet.rect.y))
-
     pygame.display.update()  # this finally updates the display
 
-    return game_over_sound_played, game_won_sound_played
+    return game_over_sound_played, game_won_sound_played, transition_active
 
 
 def play_game():
@@ -154,6 +175,7 @@ def play_game():
     settings["player_settings"]["music"] = "ON" if music_enabled_setting else "OFF"
     settings["player_settings"]["sfx"] = "ON" if sfx_enabled_setting else "OFF"
     settings["player_settings"]["ship"] = ship
+    settings["player_settings"]["difficulty"] = difficulty_setting
 
     with open(SETTINGS_FILE, "w") as settingsJsonFile:
         json.dump(settings, settingsJsonFile)
@@ -166,7 +188,7 @@ def play_game():
     player = Player(ship)
 
     # load waves
-    wave = Wave()
+    wave = Wave(difficulty_setting)
     starting_enemies = wave.waves[wave.current_wave_number]
     enemies = starting_enemies
     wave_number = 1
@@ -178,8 +200,8 @@ def play_game():
     game_won_label = GameWonLabel()
     enemies_label = EnemiesLabel()
     enemies_indicator = EnemiesIndicator(enemies)
-    wave_label = WavesLabel()
-    wave_indicator = WavesIndicator(wave_number)
+    wave_label = WavesLabel(WIDTH, HEIGHT)
+    wave_indicator = WavesIndicator(wave_number, WIDTH, HEIGHT)
 
     game_over_sound_played = False
     game_won_sound_played = False
@@ -187,6 +209,9 @@ def play_game():
     clock = pygame.time.Clock()
 
     run = True
+
+    transition_time = pygame.time.get_ticks()
+    transition_active = True
 
     while run:
 
@@ -209,30 +234,31 @@ def play_game():
         player.update(pygame.key.get_pressed())
 
         # update the enemy
-        for enemy in enemies:
-            enemy.update()
+        if not transition_active:
+            for enemy in enemies:
+                enemy.update()
 
-            if enemy.health == 0:
-                enemies.remove(enemy)
-                if sfx_enabled_setting:
-                    pygame.mixer.Channel(2).play(pygame.mixer.Sound("sfx/explosion.wav"))
+                if enemy.health == 0:
+                    enemies.remove(enemy)
+                    if sfx_enabled_setting:
+                        pygame.mixer.Channel(2).play(pygame.mixer.Sound("sfx/explosion.wav"))
 
-            enemy.add_bullet(sfx_enabled_setting)
-            enemy.shoot()
-            enemy.detect_hit(player, sfx_enabled_setting)
+                enemy.add_bullet(sfx_enabled_setting)
+                enemy.shoot()
+                enemy.detect_hit(player, sfx_enabled_setting)
 
-        player.shoot()
+            player.shoot()
 
-        for enemy in enemies:
-            player.detect_hit(enemy, sfx_enabled_setting)
+            for enemy in enemies:
+                player.detect_hit(enemy, sfx_enabled_setting)
 
-        player_health_indicator.update(player.health)
-        enemies_indicator.update(enemies)
+            player_health_indicator.update(player.health)
+            enemies_indicator.update(enemies)
+
         wave_indicator.update(wave_number)
-
         pygame.draw.rect(WIN, banner_color, banner)
 
-        game_over_sound_played, game_won_sound_played = \
+        game_over_sound_played, game_won_sound_played, transition_active = \
             draw_game_window(game_over_sound_played,
                              game_won_sound_played,
                              player_health_label,
@@ -245,11 +271,25 @@ def play_game():
                              game_won_label,
                              player,
                              enemies,
-                             wave)
+                             wave,
+                             transition_time,
+                             transition_active)
 
-        if len(enemies) == 0:
+        if len(enemies) == 0 and len(wave.waves) != 0:
             enemies = wave.get_next_wave()
             wave_number += 1
+
+            # we want to reset the player's beam overheating values
+            player.beam_cooldown_timer = None
+            player.beams_overheated = False
+            player.bullets_shot = 0
+
+            # give the player back one life
+            player.add_health()
+
+            # reset transition time
+            transition_time = pygame.time.get_ticks()
+            transition_active = True
 
         # just for accurate wave indicator value
         if len(wave.waves) == 0:

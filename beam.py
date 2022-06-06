@@ -23,11 +23,11 @@ class PlayerBeam:
         # bullet explosion (None at init)
         self.explosion = None
 
-class EnemyBullet:
+class EnemyBeam:
 
-    def __init__(self, player_rect):
+    def __init__(self, player_rect, size, x_add, y_add):
         # define attributes
-        self.size = (40, 40)
+        self.size = size
         self.velocity = 10
         self.rotation = 180
 
@@ -38,8 +38,8 @@ class EnemyBullet:
 
         # track the position
         self.rect = pygame.Rect(
-            player_rect.x + 15,
-            player_rect.y + player_rect.height // 2 + 20,
+            player_rect.x + x_add,
+            player_rect.y + player_rect.height // 2 + y_add,
             10,
             5
         )

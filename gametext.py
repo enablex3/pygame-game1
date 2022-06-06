@@ -74,25 +74,25 @@ class EnemiesIndicator:
         self.image = self.fontObj.render(self.label, True, self.color)
 
 class WavesLabel:
-    def __init__(self):
+    def __init__(self, WIN_WIDTH, WIN_HEIGHT):
         self.font = pygame.font.get_default_font() + ".ttf"
-        self.size = 20
-        self.label = "Wave:"
+        self.size = 50
+        self.label = "Wave"
         self.fontObj = pygame.font.SysFont(self.font, self.size)
         self.image = self.fontObj.render(self.label, True, (255, 255, 255))
-        self.position = (LABEL_X + 230, LABEL_Y)
+        self.position = ((WIN_WIDTH // 2) - 60, WIN_HEIGHT // 2)
 
 
 class WavesIndicator:
 
-    def __init__(self, wave_number):
+    def __init__(self, wave_number, WIN_WIDTH, WIN_HEIGHT):
         self.font = pygame.font.get_default_font() + ".ttf"
-        self.size = 20
+        self.size = 50
         self.label = str(wave_number)
         self.color = (255, 255, 255)
         self.fontObj = pygame.font.SysFont(self.font, self.size)
         self.image = self.fontObj.render(self.label, True, self.color)
-        self.position = (INDICATOR_X + 220, LABEL_Y)
+        self.position = ((WIN_WIDTH // 2) + 40, WIN_HEIGHT // 2)
 
     def update(self, wave_number):
         self.label = str(wave_number)
