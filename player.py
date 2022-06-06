@@ -68,6 +68,12 @@ class Player:
         if self.rect.x < 20:
             self.rect.x = 20
 
+        if self.rect.y > 700:
+            self.rect.y = 700
+
+        if self.rect.y < 200:
+            self.rect.y = 200
+
         self.move(keys_pressed)
 
         if not self.is_hit_timer is None:
@@ -88,6 +94,12 @@ class Player:
 
         if keys_pressed[pygame.K_d]:
             self.rect.x += self.velocity
+
+        if keys_pressed[pygame.K_w]:
+            self.rect.y -= self.velocity
+
+        if keys_pressed[pygame.K_s]:
+            self.rect.y += self.velocity
 
     def add_bullet(self, sfx_enabled_setting):
         if not self.beams_overheated:
@@ -136,6 +148,6 @@ class Player:
         if diff == 0:
             self.health = self.starting_health
         else:
-            # this keeps us from modifiying self.health before adding 1
+            # this keeps us from modifying self.health before adding 1
             self.health = (self.starting_health - diff) + 1
 

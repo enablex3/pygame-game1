@@ -98,9 +98,9 @@ class EnemyBoss1:
             direction = random.choice(self.directions)
             if direction == "x":
                 self.rect.x += self.velocity
-            elif direction == "y":
+            if direction == "y":
                 self.rect.y += self.velocity
-            elif direction == "xy":
+            if direction == "xy":
                 self.rect.y += self.velocity
                 self.rect.x += self.velocity
 
