@@ -1,8 +1,11 @@
 import json
+import random
+
 import pygame_menu
 from wave import Wave
 from gametext import *
 from player import Player
+from star_field import StarField
 
 # init pygame
 pygame.init()
@@ -26,9 +29,11 @@ WIDTH, HEIGHT = 500, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 FPS = 60
 
-# background and mouse settings
+"""# background and mouse settings
 BACKGROUND = pygame.image.load("sprites/background.png").convert_alpha()
-BACKGROUND = pygame.transform.scale(BACKGROUND, (WIDTH, HEIGHT))
+BACKGROUND = pygame.transform.scale(BACKGROUND, (WIDTH, HEIGHT))"""
+
+star_field = StarField(WIDTH, HEIGHT)
 
 def set_difficulty(value, difficulty):
     global difficulty_setting
@@ -95,6 +100,30 @@ def main():
 
     menu.mainloop(WIN)
 
+def draw_star_field():
+    WIN.fill(star_field.COLORS[3])
+    # animate some motherfucking stars
+    for star in star_field.star_field_slow:
+        star[1] += 1
+        if star[1] > HEIGHT:
+            star[0] = random.randrange(0, WIDTH)
+            star[1] = random.randrange(-20, -5)
+        pygame.draw.circle(WIN, star_field.COLORS[2], star, 3)
+
+    for star in star_field.star_field_medium:
+        star[1] += 4
+        if star[1] > HEIGHT:
+            star[0] = random.randrange(0, WIDTH)
+            star[1] = random.randrange(-20, -5)
+        pygame.draw.circle(WIN, star_field.COLORS[6], star, 2)
+
+    """for star in star_field.star_field_fast:
+        star[1] += 8
+        if star[1] > HEIGHT:
+            star[0] = random.randrange(0, WIDTH)
+            star[1] = random.randrange(-20, -5)
+        pygame.draw.circle(WIN, star_field.COLORS[0], star, 1)"""
+
 def draw_game_window(game_over_sound_played,
                      game_won_sound_played,
                      enemies_label,
@@ -109,8 +138,7 @@ def draw_game_window(game_over_sound_played,
                      transition_time,
                      transition_active):
 
-    WIN.blit(BACKGROUND, (0, 0))  # this doesn't actually display yet
-
+    #WIN.blit(BACKGROUND, (0, 0))  # this doesn't actually display yet
     # display labels and indicators
     WIN.blit(enemies_label.image, enemies_label.position)
     WIN.blit(enemies_indicator.image, enemies_indicator.position)
@@ -249,6 +277,8 @@ def play_game():
 
         wave_indicator.update(wave_number)
         pygame.draw.rect(WIN, banner_color, banner)
+
+        draw_star_field()
 
         game_over_sound_played, game_won_sound_played, transition_active = \
             draw_game_window(game_over_sound_played,
