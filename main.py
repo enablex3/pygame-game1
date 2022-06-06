@@ -1,4 +1,3 @@
-import threading
 import json
 import pygame_menu
 from wave import Wave
@@ -98,8 +97,6 @@ def main():
 
 def draw_game_window(game_over_sound_played,
                      game_won_sound_played,
-                     player_health_label,
-                     player_health_indicator,
                      enemies_label,
                      enemies_indicator,
                      wave_label,
@@ -115,8 +112,6 @@ def draw_game_window(game_over_sound_played,
     WIN.blit(BACKGROUND, (0, 0))  # this doesn't actually display yet
 
     # display labels and indicators
-    WIN.blit(player_health_label.image, player_health_label.position)
-    WIN.blit(player_health_indicator.image, player_health_indicator.position)
     WIN.blit(enemies_label.image, enemies_label.position)
     WIN.blit(enemies_indicator.image, enemies_indicator.position)
 
@@ -194,8 +189,6 @@ def play_game():
     wave_number = 1
 
     # load text
-    player_health_label = PlayerHealthLabel()
-    player_health_indicator = PlayerHealthIndicator(player.health)
     game_over_label = GameOverLabel()
     game_won_label = GameWonLabel()
     enemies_label = EnemiesLabel()
@@ -252,7 +245,6 @@ def play_game():
             for enemy in enemies:
                 player.detect_hit(enemy, sfx_enabled_setting)
 
-            player_health_indicator.update(player.health)
             enemies_indicator.update(enemies)
 
         wave_indicator.update(wave_number)
@@ -261,8 +253,6 @@ def play_game():
         game_over_sound_played, game_won_sound_played, transition_active = \
             draw_game_window(game_over_sound_played,
                              game_won_sound_played,
-                             player_health_label,
-                             player_health_indicator,
                              enemies_label,
                              enemies_indicator,
                              wave_label,
@@ -285,7 +275,7 @@ def play_game():
             player.bullets_shot = 0
 
             # give the player back one life
-            player.add_health()
+            player.add_life()
 
             # reset transition time
             transition_time = pygame.time.get_ticks()

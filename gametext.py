@@ -16,37 +16,6 @@ class LoadingLabel:
         self.image = self.fontObj.render(self.label, True, (0, 0, 0))
         self.position = (175, 500)
 
-class PlayerHealthLabel:
-
-    def __init__(self):
-        self.font = pygame.font.get_default_font() + ".ttf"
-        self.size = 20
-        self.label = "Health:"
-        self.fontObj = pygame.font.SysFont(self.font, self.size)
-        self.image = self.fontObj.render(self.label, True, (255, 255, 255))
-        self.position = (LABEL_X + 80, LABEL_Y)
-
-class PlayerHealthIndicator:
-
-    def __init__(self, health):
-        self.font = pygame.font.get_default_font() + ".ttf"
-        self.size = 20
-        self.label = str(health)
-        self.color = (25, 255, 124)
-        self.fontObj = pygame.font.SysFont(self.font, self.size)
-        self.image = self.fontObj.render(self.label, True, self.color)
-        self.position = (INDICATOR_X + 75, LABEL_Y)
-
-    def update(self, health):
-        if health <= 3:
-            self.color = (255, 100, 100)
-        else:
-            self.color = (25, 255, 124)
-
-        self.label = str(health)
-
-        self.image = self.fontObj.render(self.label, True, self.color)
-
 class EnemiesLabel:
     def __init__(self):
         self.font = pygame.font.get_default_font() + ".ttf"

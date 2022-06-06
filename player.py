@@ -44,7 +44,8 @@ class Player:
         self.bullets = []
 
         # track health
-        self.health = 5
+        self.starting_health = 5
+        self.health = self.starting_health
 
         # track if hit
         self.is_hit = False
@@ -128,5 +129,13 @@ class Player:
         self.image = self.hit_image
         self.is_hit_timer = pygame.time.get_ticks()
 
-    def add_health(self):
-        self.health += 1
+    def add_life(self):
+        # need to add one life this way b/c the function gets called each frame
+        diff = self.starting_health - self.health
+
+        if diff == 0:
+            self.health = self.starting_health
+        else:
+            # this keeps us from modifiying self.health before adding 1
+            self.health = (self.starting_health - diff) + 1
+
