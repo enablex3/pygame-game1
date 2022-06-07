@@ -1,11 +1,12 @@
 import json
 import random
-
 import pygame_menu
+
 from wave import Wave
 from gametext import *
 from player import Player
 from star_field import StarField
+from asteroid import Asteroid
 
 # init pygame
 pygame.init()
@@ -19,6 +20,7 @@ music_enabled_setting = (settings["player_settings"]["music"] == "ON")
 sfx_enabled_setting = (settings["player_settings"]["sfx"] == "ON")
 difficulty_setting = settings["player_settings"]["difficulty"]
 ship = settings["player_settings"]["ship"]
+highscore = int(settings["player_settings"]["highscore"])
 
 # caption
 pygame.display.set_caption("Whacking Space")
@@ -28,10 +30,6 @@ pygame.mixer.init()
 WIDTH, HEIGHT = 500, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 FPS = 60
-
-"""# background and mouse settings
-BACKGROUND = pygame.image.load("sprites/background.png").convert_alpha()
-BACKGROUND = pygame.transform.scale(BACKGROUND, (WIDTH, HEIGHT))"""
 
 star_field = StarField(WIDTH, HEIGHT)
 
@@ -117,17 +115,10 @@ def draw_star_field():
             star[1] = random.randrange(-20, -5)
         pygame.draw.circle(WIN, star_field.COLORS[6], star, 2)
 
-    """for star in star_field.star_field_fast:
-        star[1] += 8
-        if star[1] > HEIGHT:
-            star[0] = random.randrange(0, WIDTH)
-            star[1] = random.randrange(-20, -5)
-        pygame.draw.circle(WIN, star_field.COLORS[0], star, 1)"""
-
 def draw_game_window(game_over_sound_played,
                      game_won_sound_played,
-                     enemies_label,
-                     enemies_indicator,
+                     highscore_label,
+                     highscore_indicator,
                      wave_label,
                      wave_indicator,
                      game_over_label,
@@ -136,12 +127,12 @@ def draw_game_window(game_over_sound_played,
                      enemies,
                      wave,
                      transition_time,
-                     transition_active):
+                     transition_active,
+                     asteroid):
 
-    #WIN.blit(BACKGROUND, (0, 0))  # this doesn't actually display yet
     # display labels and indicators
-    WIN.blit(enemies_label.image, enemies_label.position)
-    WIN.blit(enemies_indicator.image, enemies_indicator.position)
+    WIN.blit(highscore_label.image, highscore_label.position)
+    WIN.blit(highscore_indicator.image, highscore_indicator.position)
 
     # if the player is alive, display - else, game over
     if player.health != 0:
@@ -161,7 +152,7 @@ def draw_game_window(game_over_sound_played,
 
     # display each enemy, their bullets and associated explosions
     seconds = (pygame.time.get_ticks() - transition_time) / 1000
-    if seconds > 5:
+    if seconds > 3:
         for enemy in enemies:
             WIN.blit(enemy.image, (enemy.rect.x, enemy.rect.y))
 
@@ -186,6 +177,9 @@ def draw_game_window(game_over_sound_played,
             if music_enabled_setting:
                 pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/win.wav"))
 
+    if not asteroid is None:
+        WIN.blit(asteroid.image, (asteroid.rect.x, asteroid.rect.y))
+
     pygame.display.update()  # this finally updates the display
 
     return game_over_sound_played, game_won_sound_played, transition_active
@@ -194,6 +188,7 @@ def draw_game_window(game_over_sound_played,
 def play_game():
     # save the new settings first
     global settings
+    global highscore
 
     settings["player_settings"]["music"] = "ON" if music_enabled_setting else "OFF"
     settings["player_settings"]["sfx"] = "ON" if sfx_enabled_setting else "OFF"
@@ -201,7 +196,7 @@ def play_game():
     settings["player_settings"]["difficulty"] = difficulty_setting
 
     with open(SETTINGS_FILE, "w") as settingsJsonFile:
-        json.dump(settings, settingsJsonFile)
+        json.dump(settings, settingsJsonFile, indent=4)
 
     # banner for text
     banner = pygame.Rect(0, 0, WIDTH, 60)
@@ -219,8 +214,8 @@ def play_game():
     # load text
     game_over_label = GameOverLabel()
     game_won_label = GameWonLabel()
-    enemies_label = EnemiesLabel()
-    enemies_indicator = EnemiesIndicator(enemies)
+    highscore_label = HighScoreLabel()
+    highscore_indicator = HighScoreIndicator(highscore)
     wave_label = WavesLabel(WIDTH, HEIGHT)
     wave_indicator = WavesIndicator(wave_number, WIDTH, HEIGHT)
 
@@ -233,6 +228,10 @@ def play_game():
 
     transition_time = pygame.time.get_ticks()
     transition_active = True
+
+    score = 0
+
+    asteroid = None
 
     while run:
 
@@ -247,8 +246,8 @@ def play_game():
                 run = False
 
             # add a new bullet to the player bullet list if condition met
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
                     player.add_bullet(sfx_enabled_setting)
 
         # updates the player based on keys pressed
@@ -263,6 +262,7 @@ def play_game():
                     enemies.remove(enemy)
                     if sfx_enabled_setting:
                         pygame.mixer.Channel(2).play(pygame.mixer.Sound("sfx/explosion.wav"))
+                    score += 1
 
                 enemy.add_bullet(sfx_enabled_setting)
                 enemy.shoot()
@@ -273,18 +273,54 @@ def play_game():
             for enemy in enemies:
                 player.detect_hit(enemy, sfx_enabled_setting)
 
-            enemies_indicator.update(enemies)
+            if score > highscore:
+                highscore_indicator.update(score)
+                highscore = score
 
         wave_indicator.update(wave_number)
         pygame.draw.rect(WIN, banner_color, banner)
 
         draw_star_field()
 
+        if wave_number % 2 == 0:
+            # spawn asteroid
+            if asteroid is None and not transition_active:
+                asteroid = Asteroid()
+            elif not transition_active:
+                asteroid.update()
+
+                if asteroid.rect.x == 0 or asteroid.rect.x == 500:
+                    # init new asteroid if the current one goes out of bounds
+                    asteroid = Asteroid()
+
+                astroid_hit = False
+
+                for beam in player.bullets:
+                    if beam.rect.colliderect(asteroid.rect):
+                        astroid_hit = True
+                        break
+
+                if astroid_hit:
+                    if asteroid.material == "COOLANT":
+                        # we want to reset the player's beam overheating values
+                        player.beam_cooldown_timer = None
+                        player.beams_overheated = False
+                        player.bullets_shot = 0
+
+                    elif asteroid.material == "LIFE":
+                        player.add_life()
+
+                    asteroid = None
+
+        else:
+            asteroid = None
+
+
         game_over_sound_played, game_won_sound_played, transition_active = \
             draw_game_window(game_over_sound_played,
                              game_won_sound_played,
-                             enemies_label,
-                             enemies_indicator,
+                             highscore_label,
+                             highscore_indicator,
                              wave_label,
                              wave_indicator,
                              game_over_label,
@@ -293,7 +329,8 @@ def play_game():
                              enemies,
                              wave,
                              transition_time,
-                             transition_active)
+                             transition_active,
+                             asteroid)
 
         if len(enemies) == 0 and len(wave.waves) != 0:
             enemies = wave.get_next_wave()
@@ -315,47 +352,20 @@ def play_game():
         if len(wave.waves) == 0:
             wave_number = 0
 
+        if transition_active:
+            # remove bullets from player and enemies
+            for enemy in enemies:
+                enemy.bullets = []
+
+            player.bullets = []
+
+    settings["player_settings"]["highscore"] = highscore
+
+    with open(SETTINGS_FILE, "w") as settingsJsonFile:
+        json.dump(settings, settingsJsonFile, indent=4)
+
     main()
 
 
 if __name__ == "__main__":
     main()
-
-"""# set game_loaded
-game_loaded = False
-loading_image = pygame.image.load("sprites/playerShip.png").convert_alpha()
-loading_image = pygame.transform.scale(loading_image, (200, 200))
-loading_label = LoadingLabel()
-
-# load screen function
-def display_loading_screen():
-    clock = pygame.time.Clock()
-    start_load_time = pygame.time.get_ticks()
-    load_sound_played = False
-    while True:
-        clock.tick(FPS)
-
-        WIN.fill((255, 255, 255))
-        WIN.blit(loading_image, (150, 300))
-        WIN.blit(loading_label.image, loading_label.position)
-
-        pygame.display.update()
-
-        global game_loaded
-        global music_enabled_setting
-
-        if not load_sound_played:
-            load_sound_played = True
-            if music_enabled_setting:
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/load.wav"))
-
-        if game_loaded:
-            break
-
-# starting the loading thread
-loading_thread = threading.Thread(target=display_loading_screen)
-loading_thread.start()"""
-
-"""# stop loading thread
-game_loaded = True
-loading_thread.join()"""

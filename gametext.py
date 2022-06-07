@@ -16,29 +16,29 @@ class LoadingLabel:
         self.image = self.fontObj.render(self.label, True, (0, 0, 0))
         self.position = (175, 500)
 
-class EnemiesLabel:
+class HighScoreLabel:
     def __init__(self):
         self.font = pygame.font.get_default_font() + ".ttf"
-        self.size = 20
-        self.label = "Enemies:"
+        self.size = 30
+        self.label = "HIGHSCORE"
         self.fontObj = pygame.font.SysFont(self.font, self.size)
         self.image = self.fontObj.render(self.label, True, (255, 255, 255))
-        self.position = (LABEL_X + 150, LABEL_Y)
+        self.position = (LABEL_X + 50, LABEL_Y - 20)
 
 
-class EnemiesIndicator:
+class HighScoreIndicator:
 
-    def __init__(self, enemies):
+    def __init__(self, score):
         self.font = pygame.font.get_default_font() + ".ttf"
         self.size = 20
-        self.label = str(len(enemies))
+        self.label = str(score)
         self.color = (255, 255, 255)
         self.fontObj = pygame.font.SysFont(self.font, self.size)
         self.image = self.fontObj.render(self.label, True, self.color)
-        self.position = (INDICATOR_X + 160, LABEL_Y)
+        self.position = (LABEL_X + 100, LABEL_Y + 10)
 
-    def update(self, enemies):
-        self.label = str(len(enemies))
+    def update(self, score):
+        self.label = str(score)
 
         self.image = self.fontObj.render(self.label, True, self.color)
 
