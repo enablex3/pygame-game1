@@ -1,4 +1,5 @@
 import pygame
+from force_field import ForceField
 from beam import PlayerBeam
 
 class Player:
@@ -51,15 +52,14 @@ class Player:
         self.is_hit = False
         self.is_hit_timer = None
 
-        # track beams shot
-        self.beams_overheated = False
-        self.beam_cooldown_timer = None
-        self.bullets_shot = 0
-        self.BEAM_OVERHEAT_LIMIT = 10
-
         # lives indicator
         self.lives_img = pygame.image.load("sprites/PlayerLivesIndicator.png")
         self.lives_img = pygame.transform.scale(self.lives_img, (20, 20))
+
+        # force field
+        self.force_field = ForceField(self.rect)
+        self.force_field_timer = None
+        self.force_field_show = False
 
     def update(self, keys_pressed):
         if self.rect.x > 400:
@@ -81,11 +81,19 @@ class Player:
             if seconds >= 0.25:
                 self.image = self.original_img
 
-        if not self.beam_cooldown_timer is None:
-            seconds = (pygame.time.get_ticks() - self.beam_cooldown_timer) / 1000
-            if seconds > 3:
-                self.beams_overheated = False
-                self.beam_cooldown_timer = None
+        if not self.force_field_timer is None:
+            seconds = (pygame.time.get_ticks() - self.force_field_timer) / 1000
+            if seconds > 5:
+                self.force_field_show = False
+                self.force_field_timer = None
+                self.force_field.strength = 3
+
+        self.force_field.update(self.rect)
+
+        if self.force_field.strength == 0:
+            self.force_field_show = False
+            self.force_field_timer = None
+            self.force_field.strength = 3
 
     def move(self, keys_pressed):
         # player only moves left or right
@@ -102,19 +110,16 @@ class Player:
             self.rect.y += self.velocity
 
     def add_bullet(self, sfx_enabled_setting):
-        if not self.beams_overheated:
-            bullet = PlayerBeam(self.rect, self.beam_img)
-            self.bullets.append(bullet)
+        bullet = PlayerBeam(self.rect, self.beam_img)
+        self.bullets.append(bullet)
 
-            if sfx_enabled_setting:
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
+        if sfx_enabled_setting:
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
 
-            self.bullets_shot += 1
-
-        if self.bullets_shot % self.BEAM_OVERHEAT_LIMIT == 0 and not self.beams_overheated:
-            self.beams_overheated = True
-            self.beam_cooldown_timer = pygame.time.get_ticks()
-
+    def show_force_field(self):
+        if self.force_field_timer is None:
+            self.force_field_show = True
+            self.force_field_timer = pygame.time.get_ticks()
 
     def shoot(self):
         # bullets only fire to the right

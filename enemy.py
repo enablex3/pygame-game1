@@ -117,11 +117,20 @@ class Enemy:
 
     def detect_hit(self, player, sfx_enabled_setting):
         for bullet in self.bullets:
-            if bullet.rect.colliderect(player.rect):
-                self.bullets.remove(bullet)
-                player.deplete_health()
-                if sfx_enabled_setting:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
+
+            if player.force_field_show:
+                if bullet.rect.colliderect(player.force_field.rect):
+                    self.bullets.remove(bullet)
+                    player.force_field.deplete_strength()
+                    if sfx_enabled_setting:
+                        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
+
+            if not player.force_field_show:
+                if bullet.rect.colliderect(player.rect):
+                    self.bullets.remove(bullet)
+                    player.deplete_health()
+                    if sfx_enabled_setting:
+                        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
     def deplete_health(self):
         self.health -= 1

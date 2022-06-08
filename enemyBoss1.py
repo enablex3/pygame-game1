@@ -52,7 +52,7 @@ class EnemyBoss1:
         self.shooting_start_ticks = pygame.time.get_ticks()
 
         # track health
-        self.health = 8
+        self.health = 12
 
         # track explosions
         self.explosions = []

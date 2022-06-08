@@ -7,6 +7,7 @@ from gametext import *
 from player import Player
 from star_field import StarField
 from asteroid import Asteroid
+from beamcooldown import BeamCoolDown
 
 # init pygame
 pygame.init()
@@ -32,6 +33,12 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 FPS = 60
 
 star_field = StarField(WIDTH, HEIGHT)
+
+beam_cool_down = BeamCoolDown()
+
+COOLDOWN_RATE = 0.25 # 0.25 second to cool down
+HEAT_RATE = 10 # to take 10 away from cool_down_amount
+COOLDOWN_MAX_AMOUNT = 100
 
 def set_difficulty(value, difficulty):
     global difficulty_setting
@@ -98,6 +105,33 @@ def main():
 
     menu.mainloop(WIN)
 
+def determine_cool_down(cool_down_time, cool_down_amount, overheated):
+    global COOLDOWN_RATE
+
+    cool_down_indicator = 1
+
+    if cool_down_amount == 0:
+        overheated = True
+        COOLDOWN_RATE = 0.5
+
+    elif cool_down_amount >= 30:
+        overheated = False
+        COOLDOWN_RATE = 0.25
+
+    if not cool_down_time is None:
+        seconds = (pygame.time.get_ticks() - cool_down_time) / 1000
+
+        if seconds >= COOLDOWN_RATE:
+            cool_down_amount += HEAT_RATE
+            cool_down_time = None
+
+    if cool_down_time is None and cool_down_amount != COOLDOWN_MAX_AMOUNT:
+        cool_down_time = pygame.time.get_ticks()
+
+    cool_down_indicator = cool_down_amount / COOLDOWN_MAX_AMOUNT
+
+    return cool_down_indicator, cool_down_amount, cool_down_time, overheated
+
 def draw_star_field():
     WIN.fill(star_field.COLORS[3])
     # animate some motherfucking stars
@@ -128,7 +162,8 @@ def draw_game_window(game_over_sound_played,
                      wave,
                      transition_time,
                      transition_active,
-                     asteroid):
+                     asteroid,
+                     beam_cool_down):
 
     # display labels and indicators
     WIN.blit(highscore_label.image, highscore_label.position)
@@ -143,6 +178,10 @@ def draw_game_window(game_over_sound_played,
             game_over_sound_played = True
             if music_enabled_setting:
                 pygame.mixer.Channel(3).play(pygame.mixer.Sound("sfx/lose.wav"))
+
+    # player force field if condition met
+    if player.force_field_show:
+        WIN.blit(player.force_field.img, (player.force_field.rect.x, player.force_field.rect.y))
 
     # display player lives
     live_img_spacing = 20
@@ -168,6 +207,9 @@ def draw_game_window(game_over_sound_played,
         if len(wave.waves) != 0:
             WIN.blit(wave_label.image, wave_label.position)
             WIN.blit(wave_indicator.image, wave_indicator.position)
+
+    # display cool down indicator
+    WIN.blit(beam_cool_down.img, beam_cool_down.position)
 
     # if no enemies left, player won
     if len(wave.waves) == 0:
@@ -233,6 +275,11 @@ def play_game():
 
     asteroid = None
 
+    cool_down_amount = COOLDOWN_MAX_AMOUNT
+    cool_down_time = None
+    cool_down_indicator = 1
+    overheated = False
+
     while run:
 
         clock.tick(FPS)
@@ -247,8 +294,19 @@ def play_game():
 
             # add a new bullet to the player bullet list if condition met
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
+                if event.button == 1 and not overheated:
                     player.add_bullet(sfx_enabled_setting)
+                    cool_down_time = pygame.time.get_ticks()
+                    cool_down_amount -= HEAT_RATE
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_f:
+                    player.show_force_field()
+
+        cool_down_indicator, cool_down_amount, cool_down_time, overheated = \
+            determine_cool_down(cool_down_time, cool_down_amount, overheated)
+
+        beam_cool_down.update(cool_down_indicator)
 
         # updates the player based on keys pressed
         player.update(pygame.key.get_pressed())
@@ -303,9 +361,9 @@ def play_game():
                 if astroid_hit:
                     if asteroid.material == "COOLANT":
                         # we want to reset the player's beam overheating values
-                        player.beam_cooldown_timer = None
-                        player.beams_overheated = False
-                        player.bullets_shot = 0
+                        cool_down_amount = 100
+                        cool_down_time = None
+                        cool_down_indicator = 1
 
                     elif asteroid.material == "LIFE":
                         player.add_life()
@@ -330,7 +388,8 @@ def play_game():
                              wave,
                              transition_time,
                              transition_active,
-                             asteroid)
+                             asteroid,
+                             beam_cool_down)
 
         if len(enemies) == 0 and len(wave.waves) != 0:
             enemies = wave.get_next_wave()

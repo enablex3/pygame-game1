@@ -13,8 +13,8 @@ class PlayerBeam:
         self.rect = pygame.Rect(
             player_rect.x + 15,
             player_rect.y + player_rect.height // 2 - 50,
-            10,
-            5
+            player_rect.width + 10,
+            player_rect.height + 10
         )
 
         # track if should be displayed

@@ -50,7 +50,9 @@ class Wave:
             enemies = []
 
         # add a boss after all waves defeated
-        self.waves.append([EnemyBoss1()])
+        final_wave = [Enemy(enemy_shot_frequency, enemy_velocity) for enemy in range(0, starting_enemy_amount_higher - 2)]
+        final_wave.append(EnemyBoss1())
+        self.waves.append(final_wave)
 
     def get_next_wave(self):
         try:
