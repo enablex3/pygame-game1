@@ -39,12 +39,12 @@
     "player_settings": {
         "music": "OFF",
         "sfx": "OFF",
-        "difficulty": "MEDIUM",
+        "difficulty": "HARD",
         "ship": {
             "original_img": "sprites/playerShip2.png",
             "hit_img": "sprites/playerShip2Hit.png",
             "beam_img": "sprites/playerBeam2.png"
         },
-        "highscore": 32
+        "highscore": 40
     }
 }

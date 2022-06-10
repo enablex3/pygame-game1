@@ -1,13 +1,14 @@
 import pygame
 from force_field import ForceField
 from beam import PlayerBeam
+from playermissle import PlayerMissile
 
 class Player:
 
     def __init__(self, ship):
         # define attributes
-        self.size = (70, 70)
-        self.velocity = 6
+        self.size = (80, 80)
+        self.velocity = 4
         self.starting_rotation = 0
         self.starting_position = (200, 700)
 
@@ -23,6 +24,12 @@ class Player:
         self.hit_image = pygame.image.load(ship["hit_img"]).convert_alpha()
         self.hit_image = pygame.transform.scale(self.hit_image, self.size)
         self.hit_image = pygame.transform.rotate(self.hit_image, self.starting_rotation)
+
+        # TODO apply to all ships
+        self.right_img = pygame.image.load("sprites/playerShip2Right.png").convert_alpha()
+        self.right_img = pygame.transform.scale(self.right_img, self.size)
+        self.left_img = pygame.image.load("sprites/playerShip2Left.png").convert_alpha()
+        self.left_img = pygame.transform.scale(self.left_img, self.size)
 
         # define beam attributes
         self.size = (40, 40)
@@ -43,6 +50,9 @@ class Player:
 
         # track bullets shot
         self.bullets = []
+
+        # track missles
+        self.missiles = []
 
         # track health
         self.starting_health = 5
@@ -76,10 +86,10 @@ class Player:
 
         self.move(keys_pressed)
 
-        if not self.is_hit_timer is None:
+        """if not self.is_hit_timer is None:
             seconds = (pygame.time.get_ticks() - self.is_hit_timer) / 1000
             if seconds >= 0.25:
-                self.image = self.original_img
+                self.image = self.original_img"""
 
         if not self.force_field_timer is None:
             seconds = (pygame.time.get_ticks() - self.force_field_timer) / 1000
@@ -97,11 +107,15 @@ class Player:
 
     def move(self, keys_pressed):
         # player only moves left or right
-        if keys_pressed[pygame.K_a]:
-            self.rect.x -= self.velocity
-
-        if keys_pressed[pygame.K_d]:
-            self.rect.x += self.velocity
+        if keys_pressed[pygame.K_a] or keys_pressed[pygame.K_d]:
+            if keys_pressed[pygame.K_a]:
+                self.rect.x -= self.velocity
+                self.image = self.left_img
+            elif keys_pressed[pygame.K_d]:
+                self.rect.x += self.velocity
+                self.image = self.right_img
+        else:
+            self.image = self.original_img
 
         if keys_pressed[pygame.K_w]:
             self.rect.y -= self.velocity
@@ -115,6 +129,17 @@ class Player:
 
         if sfx_enabled_setting:
             pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
+
+    def add_missile(self):
+        missile = PlayerMissile(self.rect)
+        self.missiles.append(missile)
+
+    def shoot_missile(self):
+        for missile in self.missiles:
+            missile.rect.y -= missile.velocity
+
+            if missile.rect.y <= 60:
+                self.missiles.remove(missile)
 
     def show_force_field(self):
         if self.force_field_timer is None:
@@ -133,9 +158,14 @@ class Player:
         for bullet in self.bullets:
             if bullet.rect.colliderect(enemy.rect):
                 self.bullets.remove(bullet)
-                enemy.deplete_health()
+                enemy.deplete_health(1)
                 if sfx_enabled_setting:
                     pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
+
+        for missile in self.missiles:
+            if missile.rect.colliderect(enemy.rect):
+                self.missiles.remove(missile)
+                enemy.deplete_health(3)
 
     def deplete_health(self):
         if self.health != 0:

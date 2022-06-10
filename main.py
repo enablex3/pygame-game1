@@ -169,6 +169,29 @@ def draw_game_window(game_over_sound_played,
     WIN.blit(highscore_label.image, highscore_label.position)
     WIN.blit(highscore_indicator.image, highscore_indicator.position)
 
+    # display each enemy, their bullets and associated explosions
+    seconds = (pygame.time.get_ticks() - transition_time) / 1000
+    if seconds > 3:
+        for enemy in enemies:
+            WIN.blit(enemy.image, (enemy.rect.x, enemy.rect.y))
+
+            for bullet in enemy.bullets:
+                WIN.blit(bullet.image, (bullet.rect.x, bullet.rect.y))
+
+        # display player bullets
+        for bullet in player.bullets:
+            WIN.blit(bullet.image, (bullet.rect.x, bullet.rect.y))
+
+        # display player missiles
+        for missile in player.missiles:
+            WIN.blit(missile.img, (missile.rect.x, missile.rect.y))
+
+        transition_active = False
+    else:
+        if len(wave.waves) != 0:
+            WIN.blit(wave_label.image, wave_label.position)
+            WIN.blit(wave_indicator.image, wave_indicator.position)
+
     # if the player is alive, display - else, game over
     if player.health != 0:
         WIN.blit(player.image, (player.rect.x, player.rect.y))
@@ -188,25 +211,6 @@ def draw_game_window(game_over_sound_played,
     for k in range(0, player.health):
         WIN.blit(player.lives_img, (live_img_spacing, 20))
         live_img_spacing += 25
-
-    # display each enemy, their bullets and associated explosions
-    seconds = (pygame.time.get_ticks() - transition_time) / 1000
-    if seconds > 3:
-        for enemy in enemies:
-            WIN.blit(enemy.image, (enemy.rect.x, enemy.rect.y))
-
-            for bullet in enemy.bullets:
-                WIN.blit(bullet.image, (bullet.rect.x, bullet.rect.y))
-
-        # display player bullets
-        for bullet in player.bullets:
-            WIN.blit(bullet.image, (bullet.rect.x, bullet.rect.y))
-
-        transition_active = False
-    else:
-        if len(wave.waves) != 0:
-            WIN.blit(wave_label.image, wave_label.position)
-            WIN.blit(wave_indicator.image, wave_indicator.position)
 
     # display cool down indicator
     WIN.blit(beam_cool_down.img, beam_cool_down.position)
@@ -298,6 +302,8 @@ def play_game():
                     player.add_bullet(sfx_enabled_setting)
                     cool_down_time = pygame.time.get_ticks()
                     cool_down_amount -= HEAT_RATE
+                if event.button == 3:
+                    player.add_missile()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_f:
@@ -316,7 +322,7 @@ def play_game():
             for enemy in enemies:
                 enemy.update()
 
-                if enemy.health == 0:
+                if enemy.health <= 0:
                     enemies.remove(enemy)
                     if sfx_enabled_setting:
                         pygame.mixer.Channel(2).play(pygame.mixer.Sound("sfx/explosion.wav"))
@@ -327,6 +333,7 @@ def play_game():
                 enemy.detect_hit(player, sfx_enabled_setting)
 
             player.shoot()
+            player.shoot_missile()
 
             for enemy in enemies:
                 player.detect_hit(enemy, sfx_enabled_setting)

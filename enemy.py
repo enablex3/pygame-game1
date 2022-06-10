@@ -132,7 +132,7 @@ class Enemy:
                     if sfx_enabled_setting:
                         pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
-    def deplete_health(self):
-        self.health -= 1
+    def deplete_health(self, amount):
+        self.health -= amount
         self.image = self.hit_image
         self.is_hit_timer = pygame.time.get_ticks()
