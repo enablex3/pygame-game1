@@ -1,6 +1,6 @@
 import pygame
 
-SIZE = (90, 90)
+SIZE = (110, 110)
 
 class ForceField:
 
@@ -13,8 +13,8 @@ class ForceField:
         self.hit_img = pygame.image.load("sprites/ForceFieldHit.png")
         self.hit_img = pygame.transform.scale(self.hit_img, SIZE)
 
-        self.offset_x = 10
-        self.offset_y = 30
+        self.offset_x = 15
+        self.offset_y = 35
 
         self.rect = pygame.Rect(
             player_rect.x - self.offset_x,

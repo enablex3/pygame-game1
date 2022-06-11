@@ -6,7 +6,7 @@ class PlayerMissile:
         self.size = (20, 50)
         self.velocity = 4
 
-        self.img = pygame.image.load("sprites/playerMissle.png")
+        self.img = pygame.image.load("../sprites/player/missile/small.png")
         self.img = pygame.transform.scale(self.img, self.size)
 
         self.rect = pygame.Rect(

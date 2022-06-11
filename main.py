@@ -2,12 +2,12 @@ import json
 import random
 import pygame_menu
 
-from wave import Wave
+from wave.wave import Wave
 from gametext import *
-from player import Player
+from player.player import Player
 from star_field import StarField
-from asteroid import Asteroid
-from beamcooldown import BeamCoolDown
+from asteroid.asteroid import Asteroid
+from player.cannonindicator import CannonIndicator
 
 # init pygame
 pygame.init()
@@ -34,9 +34,9 @@ FPS = 60
 
 star_field = StarField(WIDTH, HEIGHT)
 
-beam_cool_down = BeamCoolDown()
+beam_cool_down = CannonIndicator()
 
-COOLDOWN_RATE = 0.25 # 0.25 second to cool down
+cooldown_rate = 0.25 # 0.25 second to cool down
 HEAT_RATE = 10 # to take 10 away from cool_down_amount
 COOLDOWN_MAX_AMOUNT = 100
 
@@ -106,22 +106,22 @@ def main():
     menu.mainloop(WIN)
 
 def determine_cool_down(cool_down_time, cool_down_amount, overheated):
-    global COOLDOWN_RATE
+    global cooldown_rate
 
     cool_down_indicator = 1
 
     if cool_down_amount == 0:
         overheated = True
-        COOLDOWN_RATE = 0.5
+        cooldown_rate = 0.5
 
     elif cool_down_amount >= 30:
         overheated = False
-        COOLDOWN_RATE = 0.25
+        cooldown_rate = 0.25
 
     if not cool_down_time is None:
         seconds = (pygame.time.get_ticks() - cool_down_time) / 1000
 
-        if seconds >= COOLDOWN_RATE:
+        if seconds >= cooldown_rate:
             cool_down_amount += HEAT_RATE
             cool_down_time = None
 
@@ -308,6 +308,9 @@ def play_game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_f:
                     player.show_force_field()
+
+            if event.type == pygame.KEYUP:
+                player.image = player.original_img
 
         cool_down_indicator, cool_down_amount, cool_down_time, overheated = \
             determine_cool_down(cool_down_time, cool_down_amount, overheated)

@@ -1,6 +1,6 @@
 import random
-from enemy import Enemy
-from enemyBoss1 import EnemyBoss1
+from enemy.blazer import Blazer
+from enemy.apache import Apache
 
 
 def determine_wave_attributes(difficulty_setting):
@@ -43,15 +43,15 @@ class Wave:
             starting_enemy_amount_higher = starting_enemy_amount_higher + 2
 
             for i in range(0, enemy_amount):
-                enemies.append(Enemy(enemy_shot_frequency, enemy_velocity))
+                enemies.append(Blazer(enemy_shot_frequency, enemy_velocity))
 
             self.waves.append(enemies)
 
             enemies = []
 
         # add a boss after all waves defeated
-        final_wave = [Enemy(enemy_shot_frequency, enemy_velocity) for enemy in range(0, starting_enemy_amount_higher - 2)]
-        final_wave.append(EnemyBoss1())
+        final_wave = [Blazer(enemy_shot_frequency, enemy_velocity) for enemy in range(0, starting_enemy_amount_higher - 2)]
+        final_wave.append(Apache())
         self.waves.append(final_wave)
 
     def get_next_wave(self):

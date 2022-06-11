@@ -15,24 +15,24 @@
         ],
         "ships": {
             "goblin": {
-                "original_img": "sprites/playerShip.png",
-                "hit_img": "sprites/playerShipHit.png",
-                "beam_img": "sprites/playerBeam.png"
+                "original_img": "sprites/player/ships/green_goblin/original.png",
+                "hit_img": "sprites/player/ships/green_goblin/original_hit.png",
+                "beam_img": "sprites/player/beams/green.png"
             },
             "blue_angel": {
-                "original_img": "sprites/playerShip2.png",
-                "hit_img": "sprites/playerShip2Hit.png",
-                "beam_img": "sprites/playerBeam2.png"
+                "original_img": "sprites/player/ships/blue_angel/original.png",
+                "hit_img": "sprites/player/ships/blue_angel/original_hit.png",
+                "beam_img": "sprites/player/beams/blue.png"
             },
             "dark_red": {
-                "original_img": "sprites/playerShip3.png",
-                "hit_img": "sprites/playerShip3Hit.png",
-                "beam_img": "sprites/playerBeam3.png"
+                "original_img": "sprites/player/ships/dark_red/original.png",
+                "hit_img": "sprites/player/ships/dark_red/original_hit.png",
+                "beam_img": "sprites/player/beams/red.png"
             },
             "yellow_stinger": {
-                "original_img": "sprites/playerShip4.png",
-                "hit_img": "sprites/playerShip4Hit.png",
-                "beam_img": "sprites/playerBeam4.png"
+                "original_img": "sprites/player/ships/yellow_stinger/original.png",
+                "hit_img": "sprites/player/ships/yellow_stinger/original_hit.png",
+                "beam_img": "sprites/player/beams/yellow.png"
             }
         }
     },
@@ -41,10 +41,10 @@
         "sfx": "OFF",
         "difficulty": "HARD",
         "ship": {
-            "original_img": "sprites/playerShip2.png",
-            "hit_img": "sprites/playerShip2Hit.png",
-            "beam_img": "sprites/playerBeam2.png"
+            "original_img": "sprites/player/ships/green_goblin/original.png",
+            "hit_img": "sprites/player/ships/green_goblin/original_hit.png",
+            "beam_img": "sprites/player/beams/green.png"
         },
-        "highscore": 40
+        "highscore": 41
     }
 }

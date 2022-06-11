@@ -32,7 +32,7 @@ class EnemyBeam:
         self.rotation = 180
 
         # load the image and scale
-        self.image = pygame.image.load("sprites/enemyBeam.png").convert_alpha()
+        self.image = pygame.image.load("sprites/enemies/beams/purple.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, self.size)
         self.image = pygame.transform.rotate(self.image, self.rotation)
 
