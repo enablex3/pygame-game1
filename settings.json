@@ -17,21 +17,29 @@
             "goblin": {
                 "original_img": "sprites/player/ships/green_goblin/original.png",
                 "hit_img": "sprites/player/ships/green_goblin/original_hit.png",
+                "right_img": "sprites/player/ships/green_goblin/right_turn.png",
+                "left_img": "sprites/player/ships/green_goblin/left_turn.png",
                 "beam_img": "sprites/player/beams/green.png"
             },
             "blue_angel": {
                 "original_img": "sprites/player/ships/blue_angel/original.png",
                 "hit_img": "sprites/player/ships/blue_angel/original_hit.png",
+                "right_img": "sprites/player/ships/blue_angel/right_turn.png",
+                "left_img": "sprites/player/ships/blue_angel/left_turn.png",
                 "beam_img": "sprites/player/beams/blue.png"
             },
             "dark_red": {
                 "original_img": "sprites/player/ships/dark_red/original.png",
                 "hit_img": "sprites/player/ships/dark_red/original_hit.png",
+                "right_img": "sprites/player/ships/dark_red/right_turn.png",
+                "left_img": "sprites/player/ships/dark_red/left_turn.png",
                 "beam_img": "sprites/player/beams/red.png"
             },
             "yellow_stinger": {
                 "original_img": "sprites/player/ships/yellow_stinger/original.png",
                 "hit_img": "sprites/player/ships/yellow_stinger/original_hit.png",
+                "right_img": "sprites/player/ships/yellow_stinger/right_turn.png",
+                "left_img": "sprites/player/ships/yellow_stinger/left_turn.png",
                 "beam_img": "sprites/player/beams/yellow.png"
             }
         }
@@ -41,9 +49,11 @@
         "sfx": "OFF",
         "difficulty": "HARD",
         "ship": {
-            "original_img": "sprites/player/ships/green_goblin/original.png",
-            "hit_img": "sprites/player/ships/green_goblin/original_hit.png",
-            "beam_img": "sprites/player/beams/green.png"
+            "original_img": "sprites/player/ships/yellow_stinger/original.png",
+            "hit_img": "sprites/player/ships/yellow_stinger/original_hit.png",
+            "right_img": "sprites/player/ships/yellow_stinger/right_turn.png",
+            "left_img": "sprites/player/ships/yellow_stinger/left_turn.png",
+            "beam_img": "sprites/player/beams/yellow.png"
         },
         "highscore": 41
     }

@@ -26,9 +26,9 @@ class Player:
         self.hit_image = pygame.transform.rotate(self.hit_image, self.starting_rotation)
 
         # TODO apply to all ships
-        self.right_img = pygame.image.load("sprites/player/ships/blue_angel/right_turn.png").convert_alpha()
+        self.right_img = pygame.image.load(ship["right_img"]).convert_alpha()
         self.right_img = pygame.transform.scale(self.right_img, self.size)
-        self.left_img = pygame.image.load("sprites/player/ships/blue_angel/left_turn.png").convert_alpha()
+        self.left_img = pygame.image.load(ship["left_img"]).convert_alpha()
         self.left_img = pygame.transform.scale(self.left_img, self.size)
 
         # define beam attributes
