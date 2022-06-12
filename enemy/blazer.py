@@ -6,15 +6,15 @@ STARTING_ROTATION = 180
 
 SIZE = (60, 60)
 
-STARTING_Y_OPTIONS = [80, 120]
+STARTING_Y_OPTIONS = [80, 240]
 
 class Blazer:
 
-    def __init__(self, shot_frequency, velocity):
+    def __init__(self, shot_frequency, velocity, window_width, window_height):
         # define attributes
         self.velocity = random.randrange(-velocity, velocity)
         self.shot_frequency = shot_frequency
-        self.starting_x = random.randrange(40, 400)
+        self.starting_x = random.randrange(SIZE[0], window_width - SIZE[0])
         self.starting_y = random.choice(STARTING_Y_OPTIONS)
         self.starting_position = (self.starting_x, self.starting_y)
 
@@ -40,6 +40,9 @@ class Blazer:
         # track rotation angle
         self.rotation_angle = STARTING_ROTATION
 
+        # boundary definitions
+        self.boundary_x = [SIZE[0], window_width - SIZE[0]]
+
         # track bullets shot
         self.bullets = []
         self.beam_size = (40, 40)
@@ -64,11 +67,11 @@ class Blazer:
 
     def update(self):
         # keep enemies with window boundaries
-        if self.rect.x > 400:
-            self.rect.x = 400
+        if self.rect.x > self.boundary_x[1]:
+            self.rect.x = self.boundary_x[1]
 
-        if self.rect.x < 20:
-            self.rect.x = 20
+        if self.rect.x < self.boundary_x[0]:
+            self.rect.x = self.boundary_x[0]
 
         self.move()
 

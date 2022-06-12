@@ -47,14 +47,14 @@
     "player_settings": {
         "music": "OFF",
         "sfx": "OFF",
-        "difficulty": "HARD",
+        "difficulty": "EASY",
         "ship": {
-            "original_img": "sprites/player/ships/yellow_stinger/original.png",
-            "hit_img": "sprites/player/ships/yellow_stinger/original_hit.png",
-            "right_img": "sprites/player/ships/yellow_stinger/right_turn.png",
-            "left_img": "sprites/player/ships/yellow_stinger/left_turn.png",
-            "beam_img": "sprites/player/beams/yellow.png"
+            "original_img": "sprites/player/ships/dark_red/original.png",
+            "hit_img": "sprites/player/ships/dark_red/original_hit.png",
+            "right_img": "sprites/player/ships/dark_red/right_turn.png",
+            "left_img": "sprites/player/ships/dark_red/left_turn.png",
+            "beam_img": "sprites/player/beams/red.png"
         },
-        "highscore": 41
+        "highscore": 42
     }
 }

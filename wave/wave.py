@@ -24,7 +24,7 @@ def determine_wave_attributes(difficulty_setting):
 
 class Wave:
 
-    def __init__(self, difficulty_setting):
+    def __init__(self, difficulty_setting, window_width, window_height):
         self.waves = []
         self.current_wave_number = 0
 
@@ -43,14 +43,14 @@ class Wave:
             starting_enemy_amount_higher = starting_enemy_amount_higher + 2
 
             for i in range(0, enemy_amount):
-                enemies.append(Blazer(enemy_shot_frequency, enemy_velocity))
+                enemies.append(Blazer(enemy_shot_frequency, enemy_velocity, window_width, window_height))
 
             self.waves.append(enemies)
 
             enemies = []
 
         # add a boss after all waves defeated
-        final_wave = [Blazer(enemy_shot_frequency, enemy_velocity) for enemy in range(0, starting_enemy_amount_higher - 2)]
+        final_wave = [Blazer(enemy_shot_frequency, enemy_velocity, window_width, window_height) for enemy in range(0, starting_enemy_amount_higher - 2)]
         final_wave.append(Apache())
         self.waves.append(final_wave)
 

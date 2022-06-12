@@ -1,3 +1,4 @@
+import os
 import json
 import random
 import pygame_menu
@@ -9,8 +10,14 @@ from star_field import StarField
 from asteroid.asteroid import Asteroid
 from player.cannonindicator import CannonIndicator
 
+os.environ["SDL_VIDEO_CENTERED"] = '1'
+
 # init pygame
 pygame.init()
+
+# display information from system to get width and height
+info = pygame.display.Info()
+window_width, window_height = info.current_w, info.current_h
 
 # load player settings
 SETTINGS_FILE = "settings.json"
@@ -28,11 +35,10 @@ pygame.display.set_caption("Whacking Space")
 pygame.mixer.init()
 
 # game window config
-WIDTH, HEIGHT = 500, 800
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+WIN = pygame.display.set_mode((window_width, window_height))
 FPS = 60
 
-star_field = StarField(WIDTH, HEIGHT)
+star_field = StarField(window_width, window_height)
 
 beam_cool_down = CannonIndicator()
 
@@ -82,7 +88,7 @@ def main():
     difficulty = settings["player_settings"]["difficulty"]
     difficulty_options = settings["options"]["difficulty"]
 
-    menu = pygame_menu.Menu('Main Menu', 500, 800, theme=pygame_menu.themes.THEME_DARK)
+    menu = pygame_menu.Menu('Main Menu', window_width, window_height, theme=pygame_menu.themes.THEME_DARK)
 
     menu.add.selector('Difficulty: ', [('EASY', 1), ('MEDIUM', 2), ('HARD', 3)], onchange=set_difficulty).set_value(difficulty_options.index(difficulty))
     menu.add.selector('Music: ', [('ON', 1), ('OFF', 0)], onchange=set_music).set_value(music_options.index(music))
@@ -137,15 +143,15 @@ def draw_star_field():
     # animate some motherfucking stars
     for star in star_field.star_field_slow:
         star[1] += 1
-        if star[1] > HEIGHT:
-            star[0] = random.randrange(0, WIDTH)
+        if star[1] > window_height:
+            star[0] = random.randrange(0, window_width)
             star[1] = random.randrange(-20, -5)
         pygame.draw.circle(WIN, star_field.COLORS[2], star, 3)
 
     for star in star_field.star_field_medium:
         star[1] += 4
-        if star[1] > HEIGHT:
-            star[0] = random.randrange(0, WIDTH)
+        if star[1] > window_height:
+            star[0] = random.randrange(0, window_width)
             star[1] = random.randrange(-20, -5)
         pygame.draw.circle(WIN, star_field.COLORS[6], star, 2)
 
@@ -245,14 +251,14 @@ def play_game():
         json.dump(settings, settingsJsonFile, indent=4)
 
     # banner for text
-    banner = pygame.Rect(0, 0, WIDTH, 60)
+    banner = pygame.Rect(0, 0, window_width, 60)
     banner_color = (0, 0, 0)
 
     # load the player
-    player = Player(ship)
+    player = Player(ship, window_width, window_height)
 
     # load waves
-    wave = Wave(difficulty_setting)
+    wave = Wave(difficulty_setting, window_width, window_height)
     starting_enemies = wave.waves[wave.current_wave_number]
     enemies = starting_enemies
     wave_number = 1
@@ -262,8 +268,8 @@ def play_game():
     game_won_label = GameWonLabel()
     highscore_label = HighScoreLabel()
     highscore_indicator = HighScoreIndicator(highscore)
-    wave_label = WavesLabel(WIDTH, HEIGHT)
-    wave_indicator = WavesIndicator(wave_number, WIDTH, HEIGHT)
+    wave_label = WavesLabel(window_width, window_height)
+    wave_indicator = WavesIndicator(wave_number, window_width, window_height)
 
     game_over_sound_played = False
     game_won_sound_played = False

@@ -5,12 +5,12 @@ from player.missile import PlayerMissile
 
 class Player:
 
-    def __init__(self, ship):
+    def __init__(self, ship, window_width, window_height):
         # define attributes
         self.size = (80, 80)
         self.velocity = 4
         self.starting_rotation = 0
-        self.starting_position = (200, 700)
+        self.starting_position = (window_width // 2, window_height - self.size[1])
 
         # load the player's image, scale and rotate
         self.image = pygame.image.load(ship["original_img"]).convert_alpha()
@@ -45,6 +45,10 @@ class Player:
                                 self.size[0] + 20,
                                 self.size[1])
 
+        # boundary definitions
+        self.boundary_x = [self.size[0], window_width - self.size[0]]
+        self.boundary_y = [self.size[1] * 3, window_height - self.size[1]]
+
         # track rotation angle
         self.rotation_angle = self.starting_rotation
 
@@ -72,17 +76,17 @@ class Player:
         self.force_field_show = False
 
     def update(self, keys_pressed):
-        if self.rect.x > 400:
-            self.rect.x = 400
+        if self.rect.x > self.boundary_x[1]:
+            self.rect.x = self.boundary_x[1]
 
-        if self.rect.x < 20:
-            self.rect.x = 20
+        if self.rect.x < self.boundary_x[0]:
+            self.rect.x = self.boundary_x[0]
 
-        if self.rect.y > 700:
-            self.rect.y = 700
+        if self.rect.y > self.boundary_y[1]:
+            self.rect.y = self.boundary_y[1]
 
-        if self.rect.y < 200:
-            self.rect.y = 200
+        if self.rect.y < self.boundary_y[0]:
+            self.rect.y = self.boundary_y[0]
 
         self.move(keys_pressed)
 
