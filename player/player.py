@@ -131,7 +131,7 @@ class Player:
         self.bullets.append(bullet)
 
         if sfx_enabled_setting:
-            pygame.mixer.Channel(0).play(pygame.mixer.Sound("../sfx/shoot.wav"))
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
 
     def add_missile(self):
         missile = PlayerMissile(self.rect)
@@ -163,7 +163,7 @@ class Player:
                 self.bullets.remove(bullet)
                 enemy.deplete_health(1)
                 if sfx_enabled_setting:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("../sfx/hit.wav"))
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
         for missile in self.missiles:
             if missile.rect.colliderect(enemy.rect):

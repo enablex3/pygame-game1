@@ -104,7 +104,7 @@ class Blazer:
             self.shooting_start_ticks = pygame.time.get_ticks()
 
             if sfx_enabled_setting:
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound("../sfx/shoot.wav"))
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
 
             return True
 
@@ -126,14 +126,14 @@ class Blazer:
                     self.bullets.remove(bullet)
                     player.force_field.deplete_strength()
                     if sfx_enabled_setting:
-                        pygame.mixer.Channel(1).play(pygame.mixer.Sound("../sfx/hit.wav"))
+                        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
             if not player.force_field_show:
                 if bullet.rect.colliderect(player.rect):
                     self.bullets.remove(bullet)
                     player.deplete_health()
                     if sfx_enabled_setting:
-                        pygame.mixer.Channel(1).play(pygame.mixer.Sound("../sfx/hit.wav"))
+                        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
     def deplete_health(self, amount):
         self.health -= amount

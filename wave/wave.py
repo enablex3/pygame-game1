@@ -51,7 +51,7 @@ class Wave:
 
         # add a boss after all waves defeated
         final_wave = [Blazer(enemy_shot_frequency, enemy_velocity, window_width, window_height) for enemy in range(0, starting_enemy_amount_higher - 2)]
-        final_wave.append(Apache())
+        final_wave.append(Apache(window_width, window_height))
         self.waves.append(final_wave)
 
     def get_next_wave(self):

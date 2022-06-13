@@ -10,9 +10,9 @@ STARTING_Y_OPTIONS = [80, 120]
 
 class Apache:
 
-    def __init__(self):
+    def __init__(self, window_width, window_height):
         # define attributes
-        self.velocity = random.randrange(-6, 6)
+        self.velocity = 6
         self.starting_x = random.randrange(40, 400)
         self.starting_y = random.choice(STARTING_Y_OPTIONS)
         self.starting_position = (self.starting_x, self.starting_y)
@@ -44,7 +44,7 @@ class Apache:
         self.beam_size = (60, 60)
 
         # track random travel time
-        self.travel_time = random.randrange(1, 3)
+        self.travel_time = random.randrange(3, 5)
         self.travel_start_ticks = pygame.time.get_ticks()
 
         # track random shooting time
@@ -54,6 +54,10 @@ class Apache:
         # track health
         self.health = 12
 
+        # boundary definitions
+        self.boundary_x = [SIZE[0], window_width - SIZE[0]]
+        self.boundary_y = [SIZE[1] // 2, window_height - SIZE[1]]
+
         # track explosions
         self.explosions = []
 
@@ -62,21 +66,21 @@ class Apache:
         self.is_hit_timer = None
 
         # random directions
-        self.directions = ["x", "y", "xy"]
+        self.directions = ["x", "y", "xy", "-x", "-y", "-xy"]
 
     def update(self):
         # keep enemies with window boundaries
-        if self.rect.x > 400:
-            self.rect.x = 400
+        if self.rect.x > self.boundary_x[1]:
+            self.rect.x = self.boundary_x[1]
 
-        if self.rect.x < 20:
-            self.rect.x = 20
+        if self.rect.x < self.boundary_x[0]:
+            self.rect.x = self.boundary_x[0]
 
-        if self.rect.y < 65:
-            self.rect.y = 65
+        if self.rect.y > self.boundary_y[1]:
+            self.rect.y = self.boundary_y[1]
 
-        if self.rect.y > 250:
-            self.rect.y = 250
+        if self.rect.y < self.boundary_y[0]:
+            self.rect.y = self.boundary_y[0]
 
         self.move()
 
@@ -88,14 +92,13 @@ class Apache:
     def move(self):
         # player only moves left or right for a random duration
         seconds = (pygame.time.get_ticks() - self.travel_start_ticks) / 1000
+        direction = random.choice(self.directions)
 
         # enemies move at random range of time
         if seconds > self.travel_time:
-            self.travel_time = random.randrange(1, 3)
+            self.travel_time = random.randrange(3, 5)
             self.travel_start_ticks = pygame.time.get_ticks()
-            self.velocity = random.randrange(-7, 7)
         else:
-            direction = random.choice(self.directions)
             if direction == "x":
                 self.rect.x += self.velocity
             if direction == "y":
@@ -103,6 +106,13 @@ class Apache:
             if direction == "xy":
                 self.rect.y += self.velocity
                 self.rect.x += self.velocity
+            if direction == "-x":
+                self.rect.x -= self.velocity
+            if direction == "-y":
+                self.rect.y -= self.velocity
+            if direction == "-xy":
+                self.rect.y -= self.velocity
+                self.rect.x -= self.velocity
 
     def add_bullet(self, sfx_enabled_setting):
         # enemies shoot randomly
@@ -117,7 +127,7 @@ class Apache:
             self.shooting_start_ticks = pygame.time.get_ticks()
 
             if sfx_enabled_setting:
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound("../sfx/shoot.wav"))
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("sfx/shoot.wav"))
 
             return True
 
@@ -137,7 +147,7 @@ class Apache:
                 self.bullets.remove(bullet)
                 player.deplete_health()
                 if sfx_enabled_setting:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("../sfx/hit.wav"))
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("sfx/hit.wav"))
 
     def deplete_health(self, amount):
         self.health -= amount

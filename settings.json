@@ -45,15 +45,15 @@
         }
     },
     "player_settings": {
-        "music": "OFF",
+        "music": "ON",
         "sfx": "OFF",
         "difficulty": "EASY",
         "ship": {
-            "original_img": "sprites/player/ships/dark_red/original.png",
-            "hit_img": "sprites/player/ships/dark_red/original_hit.png",
-            "right_img": "sprites/player/ships/dark_red/right_turn.png",
-            "left_img": "sprites/player/ships/dark_red/left_turn.png",
-            "beam_img": "sprites/player/beams/red.png"
+            "original_img": "sprites/player/ships/blue_angel/original.png",
+            "hit_img": "sprites/player/ships/blue_angel/original_hit.png",
+            "right_img": "sprites/player/ships/blue_angel/right_turn.png",
+            "left_img": "sprites/player/ships/blue_angel/left_turn.png",
+            "beam_img": "sprites/player/beams/blue.png"
         },
         "highscore": 42
     }
