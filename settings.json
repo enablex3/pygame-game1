@@ -45,7 +45,7 @@
         }
     },
     "player_settings": {
-        "music": "ON",
+        "music": "OFF",
         "sfx": "OFF",
         "difficulty": "EASY",
         "ship": {

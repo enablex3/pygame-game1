@@ -4,7 +4,7 @@ SIZE = (160, 80)
 
 class CannonIndicator:
 
-    def __init__(self):
+    def __init__(self, window_width):
         self.zero_percent_img = pygame.image.load("sprites/player/cannon_indicator/Cannon0Percent.png")
         self.zero_percent_img = pygame.transform.scale(self.zero_percent_img, SIZE)
 
@@ -41,7 +41,7 @@ class CannonIndicator:
         # upon initialization, the img will be the 100% image
         self.img = self.hundred_percent_img
 
-        self.position = (320, -10)
+        self.position = (window_width // 2 + SIZE[0], -10)
 
     def update(self, cooling):
 

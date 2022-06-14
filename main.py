@@ -40,7 +40,7 @@ FPS = 60
 
 star_field = StarField(window_width, window_height)
 
-beam_cool_down = CannonIndicator()
+beam_cool_down = CannonIndicator(window_width)
 
 cooldown_rate = 0.25 # 0.25 second to cool down
 HEAT_RATE = 10 # to take 10 away from cool_down_amount
@@ -213,7 +213,7 @@ def draw_game_window(game_over_sound_played,
         WIN.blit(player.force_field.img, (player.force_field.rect.x, player.force_field.rect.y))
 
     # display player lives
-    live_img_spacing = 20
+    live_img_spacing = window_width // 4
     for k in range(0, player.health):
         WIN.blit(player.lives_img, (live_img_spacing, 20))
         live_img_spacing += 25
@@ -264,10 +264,10 @@ def play_game():
     wave_number = 1
 
     # load text
-    game_over_label = GameOverLabel()
-    game_won_label = GameWonLabel()
-    highscore_label = HighScoreLabel()
-    highscore_indicator = HighScoreIndicator(highscore)
+    game_over_label = GameOverLabel(window_width, window_height)
+    game_won_label = GameWonLabel(window_width, window_height)
+    highscore_label = HighScoreLabel(window_width)
+    highscore_indicator = HighScoreIndicator(highscore, window_width)
     wave_label = WavesLabel(window_width, window_height)
     wave_indicator = WavesIndicator(wave_number, window_width, window_height)
 
