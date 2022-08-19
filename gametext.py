@@ -85,6 +85,6 @@ class GameWonLabel:
         self.size = 50
         self.label = "GAME WON"
         self.color = (25, 255, 124)
-        self.fontObj = d.font.SysFont(self.font, self.size)
+        self.fontObj = pygame.font.SysFont(self.font, self.size)
         self.image = self.fontObj.render(self.label, True, self.color)
         self.position = (window_width // 3 + self.size, window_height // 2)

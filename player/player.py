@@ -25,7 +25,7 @@ class Player:
         self.hit_image = pygame.transform.scale(self.hit_image, self.size)
         self.hit_image = pygame.transform.rotate(self.hit_image, self.starting_rotation)
 
-        # TODO apply to all ships
+        # display illusion of ship turning with left and right turn images
         self.right_img = pygame.image.load(ship["right_img"]).convert_alpha()
         self.right_img = pygame.transform.scale(self.right_img, self.size)
         self.left_img = pygame.image.load(ship["left_img"]).convert_alpha()
