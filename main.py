@@ -140,7 +140,7 @@ def determine_cool_down(cool_down_time, cool_down_amount, overheated):
 
 def draw_star_field():
     WIN.fill(star_field.COLORS[3])
-    # animate some motherfucking stars
+    # animate some circular stars bro
     for star in star_field.star_field_slow:
         star[1] += 1
         if star[1] > window_height:
