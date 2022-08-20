@@ -27,7 +27,7 @@ Submit a pull request if you'd like. I'd love to test out your code! :)
 <h3>How To Play</h3>
 In the awful menu I created, select your preferred options and a ship.
 <br />
-![image info](https://github.com/enablex3/pygame-game1/blob/master/demo/MainMenu.png))
+<img src="https://github.com/enablex3/pygame-game1/blob/master/demo/MainMenu.png" />
 <br />
 Click <strong>Play</strong>!
 
@@ -46,4 +46,4 @@ Click <strong>Play</strong>!
 <br />
 <strong>Right Mouse Click</strong>: Missile Launcher</li>
 <br />
-![image info](https://github.com/enablex3/pygame-game1/blob/master/demo/InGame.png)
+<img src="https://github.com/enablex3/pygame-game1/blob/master/demo/InGame.png" />
