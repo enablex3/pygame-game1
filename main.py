@@ -359,13 +359,13 @@ def play_game():
         if wave_number % 2 == 0:
             # spawn asteroid
             if asteroid is None and not transition_active:
-                asteroid = Asteroid()
+                asteroid = Asteroid(window_width, window_height)
             elif not transition_active:
                 asteroid.update()
 
-                if asteroid.rect.x == 0 or asteroid.rect.x == 500:
+                if asteroid.rect.x == 0 or asteroid.rect.x == window_width:
                     # init new asteroid if the current one goes out of bounds
-                    asteroid = Asteroid()
+                    asteroid = Asteroid(window_width, window_height)
 
                 astroid_hit = False
 
